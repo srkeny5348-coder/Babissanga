@@ -1,0 +1,161 @@
+import React from 'react';
+
+const Home = () => {
+  return (
+    <>
+      {/* Hero Section */}
+      <section className="hero">
+        <div className="container">
+          <div className="hero-grid">
+            <div className="hero-text animate-fade-in-up">
+              <span className="eyebrow"><i></i> LOGÍSTICA DE ALTO DESEMPENHO</span>
+              <h1>Movemos o que<br /><em>faz o mundo</em> avançar.</h1>
+              <p className="hero-copy">
+                Uma operação integrada que conecta mercados de transporte rodoviário, marítimo e aéreo, reduz distâncias e entrega confiança em cada quilómetro.
+              </p>
+              <div className="hero-actions">
+                <a className="btn btn-secondary" href="#/contacto">Começar agora <span>→</span></a>
+                <a className="btn btn-outline" href="#/servicos">Explorar soluções <span>↓</span></a>
+              </div>
+            </div>
+            <div className="hero-graphic">
+              <div className="hero-circle">
+                <img src="/logo.jpeg" className="hero-logo-large" alt="BJA Babissanga" />
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div className="hero-bottom-bar">
+          <div className="hero-routes">
+            ANGOLA <span>•</span> ÁFRICA <span>•</span> MUNDO
+          </div>
+          <a href="#/sobre" className="mono" style={{ fontSize: '13px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+            CONHECER EMPRESA <span>↓</span>
+          </a>
+        </div>
+      </section>
+
+      {/* Teaser Sobre Nós */}
+      <section className="section section-bg-white">
+        <div className="container">
+          <span className="eyebrow dark"><i></i> QUEM SOMOS</span>
+          <div className="intro-grid" style={{ marginBottom: '0px' }}>
+            <h2>Precisão logística.<br /><span>Ambição global.</span></h2>
+            <div className="intro-content">
+              <p>
+                A **BJA - Babissanga** é uma empresa angolana orientada para o mundo, especializada em transportes e logística. Aliamos experiência local profunda, tecnologia de ponta e uma rede estratégica para transformar cadeias de abastecimento complexas em vantagens competitivas para o seu negócio.
+              </p>
+              <a href="#/sobre" className="inline-link" style={{ marginTop: '10px' }}>Conheça a nossa história <span>↗</span></a>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Teaser Serviços */}
+      <section className="section section-bg-light">
+        <div className="container">
+          <div className="section-heading">
+            <div>
+              <span className="eyebrow"><i></i> SERVIÇOS TÉCNICOS</span>
+              <h2>Nossas Soluções</h2>
+            </div>
+            <p className="section-copy">
+              Oferecemos serviços especializados de transporte terrestre, gestão portuária e contentores para apoiar as suas necessidades comerciais.
+            </p>
+          </div>
+
+          <div className="services-grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '24px', marginBottom: '40px' }}>
+            <article className="service-card" style={{ height: '260px' }}>
+              <div className="service-header" style={{ marginBottom: '10px' }}>
+                <span className="service-number">01</span>
+              </div>
+              <div className="service-body">
+                <h3>Transporte Rodoviário</h3>
+                <p style={{ fontSize: '14px' }}>Frotas dedicadas de camiões e comerciais ligeiros para distribuição urbana e trânsito regional.</p>
+              </div>
+              <div className="service-footer" style={{ marginTop: '10px' }}>
+                <a href="#/servicos" className="service-link">Saber mais <span>→</span></a>
+              </div>
+            </article>
+
+            <article className="service-card" style={{ height: '260px' }}>
+              <div className="service-header" style={{ marginBottom: '10px' }}>
+                <span className="service-number">02</span>
+              </div>
+              <div className="service-body">
+                <h3>Logística Marítima</h3>
+                <p style={{ fontSize: '14px' }}>Gestão de contentores, desalfandegamento expedito e coordenação portuária eficiente.</p>
+              </div>
+              <div className="service-footer" style={{ marginTop: '10px' }}>
+                <a href="#/servicos" className="service-link">Saber mais <span>→</span></a>
+              </div>
+            </article>
+
+            <article className="service-card" style={{ height: '260px' }}>
+              <div className="service-header" style={{ marginBottom: '10px' }}>
+                <span className="service-number">03</span>
+              </div>
+              <div className="service-body">
+                <h3>Carga Aérea & Projetos</h3>
+                <p style={{ fontSize: '14px' }}>Transportes aéreos urgentes de alto valor e planeamento para projetos especiais sobredimensionados.</p>
+              </div>
+              <div className="service-footer" style={{ marginTop: '10px' }}>
+                <a href="#/servicos" className="service-link">Saber mais <span>→</span></a>
+              </div>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      {/* Teaser Frota */}
+      <section className="section section-bg-white">
+        <div className="container">
+          <div className="section-heading">
+            <div>
+              <span className="eyebrow dark"><i></i> FROTA DISPONÍVEL</span>
+              <h2>Nossa Frota</h2>
+            </div>
+            <p className="section-copy">
+              Possuímos equipamentos modernos e adequados a todo o tipo de carga.
+            </p>
+          </div>
+
+          <div className="fleet-grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '24px', marginBottom: '40px' }}>
+            <div className="vehicle-card" style={{ display: 'flex', flexDirection: 'column' }}>
+              <div className="vehicle-image-wrapper" style={{ height: '180px' }}>
+                <img src="/WhatsApp Image 2026-08-18 at 10.12.14 AM (2).jpeg" alt="Volvo FM" />
+              </div>
+              <div className="vehicle-info" style={{ padding: '16px' }}>
+                <h3 style={{ fontSize: '18px' }}>Camiões Volvo FM</h3>
+                <a href="#/frota" className="btn-view-spec" style={{ marginTop: '10px', fontSize: '12px' }}>Ver Frota Completa</a>
+              </div>
+            </div>
+
+            <div className="vehicle-card" style={{ display: 'flex', flexDirection: 'column' }}>
+              <div className="vehicle-image-wrapper" style={{ height: '180px' }}>
+                <img src="/WhatsApp Image 2026-08-18 at 10.12.13 AM.jpeg" alt="Steelbro" />
+              </div>
+              <div className="vehicle-info" style={{ padding: '16px' }}>
+                <h3 style={{ fontSize: '18px' }}>Carregador Lateral Steelbro</h3>
+                <a href="#/frota" className="btn-view-spec" style={{ marginTop: '10px', fontSize: '12px' }}>Ver Frota Completa</a>
+              </div>
+            </div>
+
+            <div className="vehicle-card" style={{ display: 'flex', flexDirection: 'column' }}>
+              <div className="vehicle-image-wrapper" style={{ height: '180px' }}>
+                <img src="/WhatsApp Image 2026-08-18 at 10.12.13 AM (1).jpeg" alt="Hummerlift" />
+              </div>
+              <div className="vehicle-info" style={{ padding: '16px' }}>
+                <h3 style={{ fontSize: '18px' }}>Empilhadeiras HummerLift</h3>
+                <a href="#/frota" className="btn-view-spec" style={{ marginTop: '10px', fontSize: '12px' }}>Ver Frota Completa</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </>
+  );
+};
+
+export default Home;
