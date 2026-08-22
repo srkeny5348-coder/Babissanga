@@ -1,3 +1,5 @@
+import { useSiteData } from '../context/SiteDataContext';
+
 const IconPhone = () => (
   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
     <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
@@ -18,21 +20,26 @@ const IconWhatsApp = () => (
 );
 
 const Footer = () => {
+  const { footerData } = useSiteData();
+
+  const phone = footerData.phone || '+244 921 508 050';
+  const email = footerData.email || 'geral@babissanga.com';
+  const whatsappUrl = footerData.whatsappUrl || 'https://wa.me/p/28141082612189463/244933870999';
+  const baseLocation = footerData.baseLocation || 'Luanda, Angola';
+  const operationalHours = footerData.operationalHours || 'Disponibilidade operacional 24 / 7';
+
   return (
     <footer className="site-footer" id="contacto">
       <div className="container">
         <div className="footer-top">
           <div>
-            <div className="footer-brand">
-              <img src="/logo.jpeg" alt="BJA Babissanga" />
-              <span>BABISSANGA</span>
-            </div>
+            <p className="footer-brand-name">BABISSANGA</p>
             <p style={{ marginTop: '12px', opacity: 0.8, maxWidth: '400px' }}>
               Segurança, transparência e pontualidade na logística global de mercadorias.
             </p>
           </div>
           <h2>Vamos mover<br />o <em>futuro.</em></h2>
-          <a className="round-link" href="mailto:geral@babissanga.com" aria-label="Enviar email geral">↗</a>
+          <a className="round-link" href={`mailto:${email}`} aria-label="Enviar email geral">↗</a>
         </div>
 
         <div className="footer-details">
@@ -40,39 +47,30 @@ const Footer = () => {
           <div className="footer-column">
             <span className="footer-label">Atendimento Rápido</span>
             <div className="footer-contacts-list">
-              <a href="tel:+244921508050" style={{ display: 'flex', alignItems: 'center', gap: '8px', fontWeight: '700', fontSize: '16px' }}>
-                <IconPhone /> +244 921 508 050
+              <a href={`tel:${phone.replace(/\s+/g, '')}`} style={{ display: 'flex', alignItems: 'center', gap: '8px', fontWeight: '700', fontSize: '16px' }}>
+                <IconPhone /> {phone}
               </a>
-              <a href="https://wa.me/p/28141082612189463/244933870999" target="_blank" rel="noopener noreferrer" style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#10B981', fontWeight: '700', fontSize: '15px' }}>
+              <a href={whatsappUrl} target="_blank" rel="noopener noreferrer" style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#10B981', fontWeight: '700', fontSize: '15px' }}>
                 <IconWhatsApp /> Falar no WhatsApp
               </a>
               <div style={{ marginTop: '8px', padding: '12px', background: 'rgba(255,255,255,0.03)', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.05)' }}>
                 <small style={{ display: 'block', color: 'var(--color-text-gray-light)', fontSize: '11px', fontFamily: 'var(--font-mono)' }}>BASE OPERACIONAL</small>
-                <b style={{ color: 'var(--color-bg-white)', fontSize: '13px' }}>Luanda, Angola</b>
-                <p style={{ fontSize: '12px', color: 'rgba(255,255,255,0.7)', marginTop: '2px' }}>Disponibilidade operacional 24 / 7</p>
+                <b style={{ color: 'var(--color-bg-white)', fontSize: '13px' }}>{baseLocation}</b>
+                <p style={{ fontSize: '12px', color: 'rgba(255,255,255,0.7)', marginTop: '2px' }}>{operationalHours}</p>
               </div>
             </div>
           </div>
 
-          {/* Column 2: Email Departments */}
+          {/* Column 2: Email Oficial */}
           <div className="footer-column">
-            <span className="footer-label">Departamentos de E-mail</span>
+            <span className="footer-label">Correio Electrónico</span>
             <div className="footer-contacts-list">
-              <a href="mailto:geral@babissanga.com" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <IconMail /> <span><b>Geral:</b> geral@babissanga.com</span>
+              <a href={`mailto:${email}`} style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '15px', fontWeight: '600' }}>
+                <IconMail /> <span>{email}</span>
               </a>
-              <a href="mailto:operacoes@babissanga.com" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <IconMail /> <span><b>Operações:</b> operacoes@babissanga.com</span>
-              </a>
-              <a href="mailto:financas@babissanga.com" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <IconMail /> <span><b>Financeiro:</b> financas@babissanga.com</span>
-              </a>
-              <a href="mailto:juridico@babissanga.com" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <IconMail /> <span><b>Jurídico:</b> juridico@babissanga.com</span>
-              </a>
-              <a href="mailto:apoio@babissanga.com" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <IconMail /> <span><b>Apoio:</b> apoio@babissanga.com</span>
-              </a>
+              <p style={{ fontSize: '12px', color: 'rgba(255,255,255,0.7)', marginTop: '4px', lineHeight: '1.5' }}>
+                Canal central de comunicação para cotações, operações e assuntos institucionais.
+              </p>
             </div>
           </div>
 
@@ -80,18 +78,26 @@ const Footer = () => {
           <div className="footer-column">
             <span className="footer-label">Siga a Babissanga</span>
             <div className="socials-list">
-              <a href="https://www.linkedin.com/" target="_blank" rel="noopener noreferrer" className="social-link">
-                LinkedIn <span>↗</span>
-              </a>
-              <a href="https://www.facebook.com/" target="_blank" rel="noopener noreferrer" className="social-link">
-                Facebook <span>↗</span>
-              </a>
-              <a href="https://www.youtube.com/" target="_blank" rel="noopener noreferrer" className="social-link">
-                YouTube <span>↗</span>
-              </a>
-              <a href="https://www.instagram.com/" target="_blank" rel="noopener noreferrer" className="social-link">
-                Instagram <span>↗</span>
-              </a>
+              {footerData.linkedin && (
+                <a href={footerData.linkedin} target="_blank" rel="noopener noreferrer" className="social-link">
+                  LinkedIn <span>↗</span>
+                </a>
+              )}
+              {footerData.facebook && (
+                <a href={footerData.facebook} target="_blank" rel="noopener noreferrer" className="social-link">
+                  Facebook <span>↗</span>
+                </a>
+              )}
+              {footerData.youtube && (
+                <a href={footerData.youtube} target="_blank" rel="noopener noreferrer" className="social-link">
+                  YouTube <span>↗</span>
+                </a>
+              )}
+              {footerData.instagram && (
+                <a href={footerData.instagram} target="_blank" rel="noopener noreferrer" className="social-link">
+                  Instagram <span>↗</span>
+                </a>
+              )}
             </div>
           </div>
         </div>

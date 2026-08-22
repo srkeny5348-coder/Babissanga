@@ -1,6 +1,13 @@
 import React from 'react';
+import { useSiteData } from '../context/SiteDataContext';
 
 const Home = () => {
+  const { fleetData } = useSiteData();
+
+  const volvo = fleetData.find(f => f.id === 'volvo') || {};
+  const steelbro = fleetData.find(f => f.id === 'steelbro') || {};
+  const hummerlift = fleetData.find(f => f.id === 'hummerlift') || {};
+
   return (
     <>
       {/* Hero Section */}
@@ -124,30 +131,30 @@ const Home = () => {
           <div className="fleet-grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '24px', marginBottom: '40px' }}>
             <div className="vehicle-card" style={{ display: 'flex', flexDirection: 'column' }}>
               <div className="vehicle-image-wrapper" style={{ height: '180px' }}>
-                <img src="/WhatsApp Image 2026-08-18 at 10.12.14 AM (2).jpeg" alt="Volvo FM" />
+                <img src={volvo.image || '/WhatsApp Image 2026-08-18 at 10.12.14 AM (2).jpeg'} alt={volvo.name || 'Volvo FM'} />
               </div>
               <div className="vehicle-info" style={{ padding: '16px' }}>
-                <h3 style={{ fontSize: '18px' }}>Camiões Volvo FM</h3>
+                <h3 style={{ fontSize: '18px' }}>{volvo.name || 'Camiões Volvo FM'}</h3>
                 <a href="#/frota" className="btn-view-spec" style={{ marginTop: '10px', fontSize: '12px' }}>Ver Frota Completa</a>
               </div>
             </div>
 
             <div className="vehicle-card" style={{ display: 'flex', flexDirection: 'column' }}>
               <div className="vehicle-image-wrapper" style={{ height: '180px' }}>
-                <img src="/WhatsApp Image 2026-08-18 at 10.12.13 AM.jpeg" alt="Steelbro" />
+                <img src={steelbro.image || '/WhatsApp Image 2026-08-18 at 10.12.13 AM.jpeg'} alt={steelbro.name || 'Steelbro'} />
               </div>
               <div className="vehicle-info" style={{ padding: '16px' }}>
-                <h3 style={{ fontSize: '18px' }}>Carregador Lateral Steelbro</h3>
+                <h3 style={{ fontSize: '18px' }}>{steelbro.name || 'Carregador Lateral Steelbro'}</h3>
                 <a href="#/frota" className="btn-view-spec" style={{ marginTop: '10px', fontSize: '12px' }}>Ver Frota Completa</a>
               </div>
             </div>
 
             <div className="vehicle-card" style={{ display: 'flex', flexDirection: 'column' }}>
               <div className="vehicle-image-wrapper" style={{ height: '180px' }}>
-                <img src="/WhatsApp Image 2026-08-18 at 10.12.13 AM (1).jpeg" alt="Hummerlift" />
+                <img src={hummerlift.image || '/WhatsApp Image 2026-08-18 at 10.12.13 AM (1).jpeg'} alt={hummerlift.name || 'Hummerlift'} />
               </div>
               <div className="vehicle-info" style={{ padding: '16px' }}>
-                <h3 style={{ fontSize: '18px' }}>Empilhadeiras HummerLift</h3>
+                <h3 style={{ fontSize: '18px' }}>{hummerlift.name || 'Empilhadeiras HummerLift'}</h3>
                 <a href="#/frota" className="btn-view-spec" style={{ marginTop: '10px', fontSize: '12px' }}>Ver Frota Completa</a>
               </div>
             </div>

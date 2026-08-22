@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { SiteDataProvider } from './context/SiteDataContext';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import Home from './pages/Home';
@@ -6,49 +7,60 @@ import About from './pages/About';
 import Services from './pages/Services';
 import Fleet from './pages/Fleet';
 import Contact from './pages/Contact';
+import AdminPortal from './pages/AdminPortal';
 
-function App() {
+function MainApp() {
   const [currentPage, setCurrentPage] = useState('home');
   const [initialMessage, setInitialMessage] = useState('');
 
-  // Listening to Hash change for multi-page routing
+  // Function to resolve current route from both hash and pathname
+  const resolveRoute = () => {
+    const hash = window.location.hash.replace(/^#\/?/, '').toLowerCase().trim();
+    const pathname = window.location.pathname.replace(/^\//, '').toLowerCase().trim();
+
+    // Priority to hash if set, else pathname
+    const target = hash || pathname;
+
+    if (
+      [
+        'portal-interno',
+        'gestao-bja',
+        'painel-interno'
+      ].includes(target)
+    ) {
+      return 'portal-interno';
+    }
+    if (['sobre', 'empresa', 'quem-somos'].includes(target)) return 'sobre';
+    if (['servicos', 'solucoes'].includes(target)) return 'servicos';
+    if (['frota', 'equipamentos', 'veiculos'].includes(target)) return 'frota';
+    if (['contacto', 'contactos', 'cotacao'].includes(target)) return 'contacto';
+    return 'home';
+  };
+
   useEffect(() => {
-    const handleHashChange = () => {
-      const hash = window.location.hash.replace('#/', '');
-      
-      switch (hash) {
-        case 'sobre':
-          setCurrentPage('sobre');
-          break;
-        case 'servicos':
-          setCurrentPage('servicos');
-          break;
-        case 'frota':
-          setCurrentPage('frota');
-          break;
-        case 'contacto':
-          setCurrentPage('contacto');
-          break;
-        case '':
-        case 'inicio':
-        default:
-          setCurrentPage('home');
-          break;
-      }
-      
-      // Auto scroll to top when page changes
+    const handleRouteChange = () => {
+      const route = resolveRoute();
+      setCurrentPage(route);
       window.scrollTo(0, 0);
     };
 
-    window.addEventListener('hashchange', handleHashChange);
-    // Init router
-    handleHashChange();
+    window.addEventListener('hashchange', handleRouteChange);
+    window.addEventListener('popstate', handleRouteChange);
 
-    return () => window.removeEventListener('hashchange', handleHashChange);
+    // Initial check
+    handleRouteChange();
+
+    return () => {
+      window.removeEventListener('hashchange', handleRouteChange);
+      window.removeEventListener('popstate', handleRouteChange);
+    };
   }, []);
 
   const handleSelectEquipment = (vehicle) => {
-    setInitialMessage(`Gostaria de solicitar cotação para o equipamento: ${vehicle.name} (${vehicle.type}).`);
+    const message =
+      vehicle.autoMessage ||
+      `Gostaria de solicitar cotação para o equipamento: ${vehicle.name} (${vehicle.type}).`;
+    setInitialMessage(message);
     window.location.hash = '#/contacto';
   };
 
@@ -58,6 +70,11 @@ function App() {
       setInitialMessage('');
     }
   }, [currentPage]);
+
+  // If in Admin Portal route, render only the AdminPortal without public header and footer
+  if (currentPage === 'portal-interno') {
+    return <AdminPortal />;
+  }
 
   const renderPage = () => {
     switch (currentPage) {
@@ -78,11 +95,17 @@ function App() {
   return (
     <>
       <Header currentPage={currentPage} />
-      <main>
-        {renderPage()}
-      </main>
+      <main>{renderPage()}</main>
       <Footer />
     </>
+  );
+}
+
+function App() {
+  return (
+    <SiteDataProvider>
+      <MainApp />
+    </SiteDataProvider>
   );
 }
 

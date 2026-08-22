@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useSiteData } from '../context/SiteDataContext';
 
 const IconClock = () => (
   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -16,6 +17,7 @@ const IconGlobe = () => (
 );
 
 const Contact = ({ initialMessage }) => {
+  const { addMessage } = useSiteData();
   const [formStatus, setFormStatus] = useState('idle');
   const [formData, setFormData] = useState({
     nome: '',
@@ -45,6 +47,9 @@ const Contact = ({ initialMessage }) => {
     e.preventDefault();
     setFormStatus('submitting');
 
+    // Register message in the administration system
+    addMessage(formData);
+
     setTimeout(() => {
       setFormStatus('success');
       setFormData({
@@ -55,7 +60,7 @@ const Contact = ({ initialMessage }) => {
         mensagem: ''
       });
       setTimeout(() => setFormStatus('idle'), 5000);
-    }, 1500);
+    }, 1000);
   };
 
   return (
@@ -177,49 +182,99 @@ const Contact = ({ initialMessage }) => {
         </div>
       </section>
 
-      {/* Network Map / Base section */}
+      {/* Enhanced Network Map & Hubs section */}
       <section className="network" style={{ backgroundColor: 'var(--color-primary)' }}>
         <div className="container">
-          <div className="network-grid">
-            <div className="network-text">
-              <span className="eyebrow"><i></i> PRESENÇA E COBERTURA</span>
-              <h2>Nossa Base e Conexões</h2>
-              <p>
-                A partir de Luanda, ligamos as principais rotas comerciais terrestres em Angola e estabelecemos rotas rápidas marítimas e aéreas para todo o mundo.
-              </p>
-              <div style={{ marginTop: '20px' }}>
-                <b style={{ color: 'var(--color-secondary)' }}>Endereço Base:</b>
-                <p style={{ marginTop: '6px', fontSize: '15px' }}>Luanda, Angola (Base Portuária e Terminal de Armazém Logístico)</p>
+          <div className="network-header-center">
+            <span className="eyebrow" style={{ color: 'var(--color-secondary)' }}><i></i> BASE OPERACIONAL & COBERTURA</span>
+            <h2>Nossa Localização e Conexões Globais</h2>
+            <p style={{ color: 'rgba(255,255,255,0.8)', maxWidth: '680px', margin: '0 auto 30px' }}>
+              Com sede estratégica em Luanda, asseguramos conectividade multimodal rápida para todo o território angolano, África Austral e os principais portos internacionais.
+            </p>
+          </div>
+
+          <div className="map-showcase-wrapper">
+            {/* Real Interactive Map Frame */}
+            <div className="map-frame-container">
+              <iframe
+                title="Mapa de Localização Babissanga Luanda"
+                src="https://maps.google.com/maps?q=Luanda,%20Angola&t=m&z=12&ie=UTF8&iwloc=&output=embed"
+                width="100%"
+                height="100%"
+                style={{ border: 0, minHeight: '380px' }}
+                allowFullScreen=""
+                loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+              ></iframe>
+              <div className="map-floating-badge">
+                <span className="pulse-dot"></span>
+                <div>
+                  <small>HUB PRINCIPAL</small>
+                  <strong>Luanda — Porto & Terminais</strong>
+                </div>
               </div>
             </div>
-            
-            <div className="network-visual">
-              <svg className="network-map-graphic" viewBox="0 0 400 300" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M120 40 C160 30, 240 50, 280 120 C300 160, 310 220, 240 280 C200 300, 160 270, 140 240 C110 200, 80 130, 120 40 Z" fill="rgba(255, 255, 255, 0.03)" stroke="rgba(255, 255, 255, 0.08)" strokeWidth="1.5" />
-                <path d="M160 170 Q 200 150, 260 130" stroke="var(--color-secondary)" strokeWidth="1.5" strokeDasharray="3,3" />
-                <path d="M160 170 Q 180 220, 220 250" stroke="var(--color-secondary)" strokeWidth="1.5" strokeDasharray="3,3" />
-                <path d="M160 170 Q 120 180, 100 190" stroke="rgba(255,255,255,0.4)" strokeWidth="1.5" strokeDasharray="3,3" />
-                <path d="M160 170 Q 200 180, 230 200" stroke="rgba(255,255,255,0.4)" strokeWidth="1.5" />
 
-                <circle cx="160" cy="170" r="8" fill="var(--color-secondary)" />
-                <circle cx="160" cy="170" r="16" fill="transparent" stroke="var(--color-secondary)" strokeWidth="1">
-                  <animate attributeName="r" values="8;18;8" dur="3s" repeatCount="indefinite" />
-                  <animate attributeName="opacity" values="1;0;1" dur="3s" repeatCount="indefinite" />
-                </circle>
-                
-                <circle cx="260" cy="130" r="4" fill="white" />
-                <text x="270" y="134" fill="rgba(255,255,255,0.6)" fontSize="10" fontFamily="monospace">EUROPA / ÁSIA</text>
+            {/* Hubs & Coverage Info Cards */}
+            <div className="hubs-info-grid">
+              <div className="hub-card">
+                <div className="hub-icon">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <circle cx="12" cy="5" r="3" />
+                    <line x1="12" y1="22" x2="12" y2="8" />
+                    <path d="M5 12H2a10 10 0 0 0 20 0h-3" />
+                  </svg>
+                </div>
+                <div className="hub-content">
+                  <h4>Terminal Portuário de Luanda</h4>
+                  <p>Operações de desalfandegamento, receção e despacho contínuo de contentores.</p>
+                  <span className="hub-tag">Marítimo & Aduaneiro</span>
+                </div>
+              </div>
 
-                <circle cx="220" cy="250" r="4" fill="white" />
-                <text x="230" y="254" fill="rgba(255,255,255,0.6)" fontSize="10" fontFamily="monospace">ÁFRICA DO SUL</text>
+              <div className="hub-card">
+                <div className="hub-icon">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <rect x="1" y="3" width="15" height="13" />
+                    <polygon points="16 8 20 8 23 11 23 16 16 16 16 8" />
+                    <circle cx="5.5" cy="18.5" r="2.5" />
+                    <circle cx="18.5" cy="18.5" r="2.5" />
+                  </svg>
+                </div>
+                <div className="hub-content">
+                  <h4>Corredores Nacionais</h4>
+                  <p>Distribuição rodoviária para Benguela, Huambo, Lobito, Soyo, Cabinda e Namibe.</p>
+                  <span className="hub-tag">Rodoviário FTL / LTL</span>
+                </div>
+              </div>
 
-                <circle cx="100" cy="190" r="4" fill="white" />
-                <text x="50" y="194" fill="rgba(255,255,255,0.6)" fontSize="10" fontFamily="monospace">AMÉRICAS</text>
-              </svg>
+              <div className="hub-card">
+                <div className="hub-icon">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M22 2L11 13" />
+                    <polygon points="22 2 15 22 11 13 2 9 22 2" />
+                  </svg>
+                </div>
+                <div className="hub-content">
+                  <h4>Aeroporto Internacional</h4>
+                  <p>Cargas aéreas expressas, trânsito prioritário e desembaraço aduaneiro rápido.</p>
+                  <span className="hub-tag">Carga Aérea Expresso</span>
+                </div>
+              </div>
 
-              <div className="location-badge">
-                <small>BASE OPERACIONAL PRINCIPAL</small>
-                <b>LUANDA, ANGOLA</b>
+              <div className="hub-card">
+                <div className="hub-icon">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <circle cx="12" cy="12" r="10" />
+                    <line x1="2" y1="12" x2="22" y2="12" />
+                    <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
+                  </svg>
+                </div>
+                <div className="hub-content">
+                  <h4>Rede Internacional & SADC</h4>
+                  <p>Conexões transfronteiriças com a África do Sul, RDC, Namíbia, Ásia e Europa.</p>
+                  <span className="hub-tag">Rotas Globais</span>
+                </div>
               </div>
             </div>
           </div>

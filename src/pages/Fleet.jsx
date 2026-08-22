@@ -1,106 +1,11 @@
 import { useState } from 'react';
+import { useSiteData } from '../context/SiteDataContext';
 
 const Fleet = ({ onSelectEquipment }) => {
+  const { fleetData } = useSiteData();
   const [selectedVehicle, setSelectedVehicle] = useState(null);
 
-  const fleet = [
-    {
-      id: 'volvo',
-      name: 'Camiões Volvo FM',
-      type: 'Pesado de Longo Curso',
-      description: 'Camiões de alta capacidade ideais para contentores de grande porte e logística inter-regional. Equipados com suspensão avançada e motores de alta eficiência para estradas exigentes.',
-      image: '/WhatsApp Image 2026-08-18 at 10.12.14 AM (2).jpeg',
-      specs: {
-        'Capacidade': '40 Toneladas',
-        'Motor': '420 CV / Volvo D13',
-        'Tração': '6x4',
-        'Ideal Para': 'Contentores Refrigerados e Carga Geral',
-        'Estado': 'Operacional'
-      },
-      badge: 'Destaque',
-      badgeColor: 'accent'
-    },
-    {
-      id: 'sinotruck',
-      name: 'Camiões SinoTruck HOWO 420',
-      type: 'Pesado de Carga Geral',
-      description: 'Frotas dedicadas para transporte de contentores e cargas a granel. Robustez comprovada para as estradas e rotas mais exigentes de Angola, garantindo durabilidade extrema.',
-      image: '/WhatsApp Image 2026-08-18 at 10.12.14 AM.jpeg',
-      specs: {
-        'Capacidade': '35 Toneladas',
-        'Motor': '420 CV / WD615',
-        'Tração': '6x4',
-        'Ideal Para': 'Transporte Portuário e Granéis',
-        'Estado': 'Operacional'
-      },
-      badge: 'Alta Capacidade',
-      badgeColor: 'primary'
-    },
-    {
-      id: 'steelbro',
-      name: 'Carregador Lateral Steelbro',
-      type: 'Equipamento Porta-Contentores',
-      description: 'Semi-reboque auto-carregador lateral para contentores de 20 e 40 pés. Permite carga e descarga autónoma diretamente no chão, sem necessidade de gruas adicionais no cliente.',
-      image: '/WhatsApp Image 2026-08-18 at 10.12.13 AM.jpeg',
-      specs: {
-        'Capacidade de Elevação': '36 Toneladas',
-        'Alcance': '4.0 metros',
-        'Compatibilidade': '20 e 40 Pés',
-        'Tipo': 'Auto-carregador lateral (Side Lifter)',
-        'Estado': 'Operacional'
-      },
-      badge: 'Especializado',
-      badgeColor: 'accent'
-    },
-    {
-      id: 'hiace',
-      name: 'Toyota Hiace',
-      type: 'Comercial Ligeiro',
-      description: 'Carrinhas versáteis para distribuição de encomendas urbanas, entregas rápidas e cargas fracionadas no centro das cidades de Angola com agilidade superior.',
-      image: '/WhatsApp Image 2026-08-18 at 10.12.14 AM (1).jpeg',
-      specs: {
-        'Capacidade': '1.5 Toneladas',
-        'Motor': '2.5L Diesel',
-        'Volume de Carga': '6.0 m³',
-        'Ideal Para': 'Logística Urbana e Encomendas Rápidas',
-        'Estado': 'Operacional'
-      },
-      badge: 'Urbano',
-      badgeColor: 'primary'
-    },
-    {
-      id: 'hino',
-      name: 'Toyota Hino 300',
-      type: 'Camião de Distribuição Média',
-      description: 'Camião de médio porte ideal para distribuição comercial de mercadorias, abastecimento de lojas e transporte regional de média distância com alta economia de combustível.',
-      image: '/toyota_hino.png',
-      specs: {
-        'Capacidade': '3.5 Toneladas',
-        'Motor': '4.0L Turbodiesel',
-        'Plataforma': 'Caixa Aberta / Fechada',
-        'Ideal Para': 'Distribuição de Mercadorias e Retalho',
-        'Estado': 'Operacional'
-      },
-      badge: 'Versátil',
-      badgeColor: 'primary'
-    },
-    {
-      id: 'hummerlift',
-      name: 'Empilhadeiras HummerLift',
-      type: 'Movimentação de Carga',
-      description: 'Equipamentos industriais robustos para operações de armazém, carga e descarga rápida de camiões e consolidação de contentores em terminais logísticos.',
-      image: '/WhatsApp Image 2026-08-18 at 10.12.13 AM (1).jpeg',
-      specs: {
-        'Capacidade de Elevação': '3.0 Toneladas',
-        'Altura Máx. Elevação': '4.5 metros',
-        'Combustível': 'Diesel / Gasóleo',
-        'Operação': 'Armazéns e Terminais de Contentores',
-        'Estado': 'Operacional'
-      },
-      badge: 'Armazém',
-      badgeColor: 'primary'
-    }
-  ];
+  const fleet = fleetData || [];
 
   return (
     <section className="section section-bg-white" id="frota" style={{ paddingTop: '140px' }}>
