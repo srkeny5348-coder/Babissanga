@@ -8,12 +8,13 @@
   --color-secondary: #D31211;
   --color-secondary-hover: #B80F0E;
   --color-secondary-rgb: 211, 18, 17;
-  --color-bg-light: #FAFAFB;
-  --color-bg-white: #FFFFFF;
+  --color-bg-light: #ECEFF4;
+  --color-bg-white: #E2E6EE;
+  --color-bg-card: #FFFFFF;
   --color-bg-dark: #00102B;
   --color-bg-card-dark: #00173D;
   --color-text-dark: #0F172A;
-  --color-text-muted: #64748B;
+  --color-text-muted: #526175;
   --color-text-light: #F1F5F9;
   --color-text-gray-light: #94A3B8;
   
@@ -662,10 +663,26 @@ img {
   box-shadow: var(--shadow-md);
 }
 
-.value-icon {
-  font-size: 32px;
-  margin-bottom: 24px;
-  display: inline-block;
+.value-icon-box {
+  width: 52px;
+  height: 52px;
+  background: rgba(0, 28, 70, 0.06);
+  border: 1px solid rgba(0, 28, 70, 0.12);
+  border-radius: var(--border-radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-primary);
+  margin-bottom: 22px;
+  transition: all var(--transition-normal);
+}
+
+.value-card:hover .value-icon-box {
+  background: var(--color-secondary);
+  color: #FFFFFF;
+  border-color: var(--color-secondary);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-red);
 }
 
 .value-card h3 {

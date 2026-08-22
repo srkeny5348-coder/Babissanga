@@ -22,6 +22,7 @@ const Contact = ({ initialMessage }) => {
   const [formData, setFormData] = useState({
     nome: '',
     email: '',
+    telefone: '',
     empresa: '',
     servico: 'Seleccionar serviço',
     mensagem: ''
@@ -55,6 +56,7 @@ const Contact = ({ initialMessage }) => {
       setFormData({
         nome: '',
         email: '',
+        telefone: '',
         empresa: '',
         servico: 'Seleccionar serviço',
         mensagem: ''
@@ -117,6 +119,18 @@ const Contact = ({ initialMessage }) => {
 
                 <div className="form-row">
                   <div className="form-group">
+                    <label htmlFor="telefone">Telefone / WhatsApp *</label>
+                    <input 
+                      type="tel" 
+                      id="telefone" 
+                      name="telefone" 
+                      placeholder="+244 9XX XXX XXX"
+                      value={formData.telefone}
+                      onChange={handleInputChange}
+                      required
+                    />
+                  </div>
+                  <div className="form-group">
                     <label htmlFor="empresa">Empresa</label>
                     <input 
                       type="text" 
@@ -127,22 +141,23 @@ const Contact = ({ initialMessage }) => {
                       onChange={handleInputChange}
                     />
                   </div>
-                  <div className="form-group">
-                    <label htmlFor="servico">Serviço Pretendido *</label>
-                    <select 
-                      id="servico" 
-                      name="servico"
-                      value={formData.servico}
-                      onChange={handleInputChange}
-                      required
-                    >
-                      <option disabled value="Seleccionar serviço">Seleccionar serviço</option>
-                      <option value="Transporte Rodoviário">Transporte Rodoviário</option>
-                      <option value="Logística Marítima">Logística Marítima</option>
-                      <option value="Carga Aérea">Carga Aérea</option>
-                      <option value="Projectos Especiais">Projectos Especiais</option>
-                    </select>
-                  </div>
+                </div>
+
+                <div className="form-group full-width" style={{ marginBottom: '16px' }}>
+                  <label htmlFor="servico">Serviço Pretendido *</label>
+                  <select 
+                    id="servico" 
+                    name="servico"
+                    value={formData.servico}
+                    onChange={handleInputChange}
+                    required
+                  >
+                    <option disabled value="Seleccionar serviço">Seleccionar serviço</option>
+                    <option value="Transporte Rodoviário">Transporte Rodoviário</option>
+                    <option value="Logística Marítima">Logística Marítima</option>
+                    <option value="Carga Aérea">Carga Aérea</option>
+                    <option value="Projectos Especiais">Projectos Especiais</option>
+                  </select>
                 </div>
 
                 <div className="form-group full-width">

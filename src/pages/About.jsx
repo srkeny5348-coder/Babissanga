@@ -23,19 +23,34 @@ const About = () => {
         {/* Mission, Vision, Values */}
         <div className="values-grid" style={{ marginTop: '60px' }}>
           <div className="value-card">
-            <span className="value-icon">🎯</span>
+            <div className="value-icon-box">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="12" cy="12" r="10" />
+                <circle cx="12" cy="12" r="6" />
+                <circle cx="12" cy="12" r="2" />
+              </svg>
+            </div>
             <h3>Nossa Missão</h3>
             <p>Conectar mercados nacionais e internacionais através de soluções de transporte e logística eficientes, seguras e personalizadas que impulsionam o crescimento sustentável dos nossos clientes.</p>
           </div>
           
           <div className="value-card">
-            <span className="value-icon">👁️</span>
+            <div className="value-icon-box">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="12" cy="12" r="10" />
+                <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76" />
+              </svg>
+            </div>
             <h3>Nossa Visão</h3>
             <p>Ser reconhecida como a líder em inovação e excelência no setor de logística e transporte na África Austral, servindo de ponte de referência para o comércio global.</p>
           </div>
 
           <div className="value-card">
-            <span className="value-icon">🛡️</span>
+            <div className="value-icon-box">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+              </svg>
+            </div>
             <h3>Valores Fundamentais</h3>
             <div className="core-values-list">
               <span className="value-pill">Transparência</span>

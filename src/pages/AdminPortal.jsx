@@ -440,6 +440,7 @@ const AdminPortal = () => {
                             <strong>{msg.nome}</strong>
                             {msg.empresa && <small style={{ display: 'block', color: '#64748b' }}>{msg.empresa}</small>}
                             <small style={{ display: 'block', color: '#001c46' }}>{msg.email}</small>
+                            {msg.telefone && <small style={{ display: 'block', color: '#D31211', fontWeight: '600' }}>Tel: {msg.telefone}</small>}
                           </td>
                           <td>
                             <span className="badge-service">{msg.servico || 'Geral'}</span>
@@ -829,10 +830,14 @@ const AdminPortal = () => {
                 </div>
               </div>
 
-              <div className="admin-msg-details-grid">
+              <div className="admin-msg-details-grid" style={{ gridTemplateColumns: 'repeat(4, 1fr)' }}>
                 <div>
                   <strong>E-mail do Cliente:</strong>
                   <p>{selectedMessage.email}</p>
+                </div>
+                <div>
+                  <strong>Telefone / WhatsApp:</strong>
+                  <p style={{ fontWeight: '700', color: '#D31211' }}>{selectedMessage.telefone || 'Não indicado'}</p>
                 </div>
                 <div>
                   <strong>Serviço Solicitado:</strong>
@@ -842,7 +847,7 @@ const AdminPortal = () => {
                   <strong>Data de Envio:</strong>
                   <p>
                     {new Date(selectedMessage.date).toLocaleString('pt-AO', {
-                      dateStyle: 'full',
+                      dateStyle: 'short',
                       timeStyle: 'short'
                     })}
                   </p>
@@ -864,14 +869,25 @@ const AdminPortal = () => {
                   Responder por E-mail
                 </a>
 
-                <a
-                  href={`https://wa.me/${footerData.whatsappNumber || '244933870999'}?text=Olá%20${encodeURIComponent(selectedMessage.nome)},%20contacto-o%20a%20partir%20da%20Babissanga%20relativamente%20ao%20seu%20pedido.`}
-                  className="btn btn-secondary"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  Abrir WhatsApp
-                </a>
+                {selectedMessage.telefone ? (
+                  <a
+                    href={`https://wa.me/${selectedMessage.telefone.replace(/\D/g, '')}?text=Olá%20${encodeURIComponent(selectedMessage.nome)},%20contacto-o%20da%20Babissanga%20relativamente%20ao%20seu%20pedido%20de%20cotação.`}
+                    className="btn btn-secondary"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    Falar com Cliente no WhatsApp
+                  </a>
+                ) : (
+                  <a
+                    href={`https://wa.me/${footerData.whatsappNumber || '244933870999'}?text=Olá%20${encodeURIComponent(selectedMessage.nome)},%20contacto-o%20a%20partir%20da%20Babissanga.`}
+                    className="btn btn-secondary"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    Abrir WhatsApp
+                  </a>
+                )}
 
                 <button
                   onClick={() => {
