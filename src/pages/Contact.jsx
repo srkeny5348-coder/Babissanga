@@ -41,6 +41,12 @@ const Contact = ({ initialMessage }) => {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
+    if (name === 'telefone') {
+      // Restrict strictly to numbers and optional leading plus sign
+      const numericOnly = value.replace(/[^\d+]/g, '');
+      setFormData(prev => ({ ...prev, [name]: numericOnly }));
+      return;
+    }
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
@@ -119,14 +125,22 @@ const Contact = ({ initialMessage }) => {
 
                 <div className="form-row">
                   <div className="form-group">
-                    <label htmlFor="telefone">Telefone / WhatsApp *</label>
+                    <label htmlFor="telefone">Telefone / WhatsApp * (Apenas números)</label>
                     <input 
                       type="tel" 
                       id="telefone" 
                       name="telefone" 
-                      placeholder="+244 9XX XXX XXX"
+                      inputMode="numeric"
+                      pattern="[0-9+]*"
+                      placeholder="Ex: 921508050 ou +244921508050"
                       value={formData.telefone}
                       onChange={handleInputChange}
+                      onKeyDown={(e) => {
+                        const allowed = ['Backspace', 'Tab', 'ArrowLeft', 'ArrowRight', 'Delete', 'Enter'];
+                        if (!allowed.includes(e.key) && !/[\d+]/.test(e.key) && !e.ctrlKey && !e.metaKey) {
+                          e.preventDefault();
+                        }
+                      }}
                       required
                     />
                   </div>
