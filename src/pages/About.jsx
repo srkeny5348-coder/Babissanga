@@ -2,7 +2,7 @@ import React from 'react';
 
 const About = () => {
   return (
-    <section className="section section-bg-white" style={{ paddingTop: '140px' }}>
+    <section className="section section-bg-white page-about-bg" style={{ paddingTop: '140px' }}>
       <div className="container">
         <span className="eyebrow dark"><i></i> QUEM SOMOS</span>
         <div className="intro-grid">

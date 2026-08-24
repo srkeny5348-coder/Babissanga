@@ -465,9 +465,8 @@ img {
   min-height: 100vh;
   display: flex;
   align-items: center;
-  background: radial-gradient(circle at 80% 20%, rgba(211, 18, 17, 0.05) 0%, transparent 50%),
-              radial-gradient(circle at 10% 80%, rgba(0, 28, 70, 0.08) 0%, transparent 60%),
-              var(--color-bg-white);
+  background: linear-gradient(135deg, rgba(245, 247, 250, 0.83) 0%, rgba(250, 252, 254, 0.87) 100%),
+              url('/bg1.jpg') center center / cover no-repeat;
   padding-top: 80px;
   overflow: hidden;
 }
@@ -631,6 +630,13 @@ img {
   transform: translate(3px, -3px);
 }
 
+.page-about-bg {
+  position: relative;
+  background: linear-gradient(135deg, rgba(245, 247, 250, 0.84) 0%, rgba(250, 252, 254, 0.88) 100%),
+              url('/bg2.jpg') center center / cover no-repeat;
+  background-attachment: fixed;
+}
+
 /* Mission, Vision, Values Accordion/Cards */
 .values-grid {
   display: grid;
@@ -641,11 +647,13 @@ img {
 }
 
 .value-card {
-  background: var(--color-bg-white);
+  background: rgba(255, 255, 255, 0.94);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   padding: 40px 30px;
   border-radius: var(--border-radius-md);
-  box-shadow: var(--shadow-sm);
-  border: 1px solid rgba(0, 28, 70, 0.03);
+  box-shadow: var(--shadow-md);
+  border: 1px solid rgba(0, 28, 70, 0.08);
   transition: all var(--transition-normal);
   position: relative;
   overflow: hidden;
@@ -795,6 +803,13 @@ img {
   color: var(--color-text-muted);
 }
 
+.page-services-bg {
+  position: relative;
+  background: linear-gradient(135deg, rgba(245, 247, 250, 0.84) 0%, rgba(250, 252, 254, 0.88) 100%),
+              url('/bg3.jpeg') center center / cover no-repeat;
+  background-attachment: fixed;
+}
+
 .services-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -802,11 +817,13 @@ img {
 }
 
 .service-card {
-  background: var(--color-bg-white);
+  background: rgba(255, 255, 255, 0.94);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   border-radius: var(--border-radius-md);
   padding: 40px;
-  box-shadow: var(--shadow-sm);
-  border: 1px solid rgba(0, 28, 70, 0.04);
+  box-shadow: var(--shadow-md);
+  border: 1px solid rgba(0, 28, 70, 0.08);
   transition: all var(--transition-normal);
   display: flex;
   flex-direction: column;

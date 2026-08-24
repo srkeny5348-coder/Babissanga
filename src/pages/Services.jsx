@@ -35,7 +35,7 @@ const IconBox = () => (
 
 const Services = () => {
   return (
-    <section className="section section-bg-light" style={{ paddingTop: '140px' }}>
+    <section className="section section-bg-light page-services-bg" style={{ paddingTop: '140px' }}>
       <div className="container">
         <div className="section-heading">
           <div>
