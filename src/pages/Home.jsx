@@ -26,9 +26,7 @@ const Home = () => {
               </div>
             </div>
             <div className="hero-graphic">
-              <div className="hero-circle">
-                <img src="/logo.jpeg" className="hero-logo-large" alt="BJA Babissanga" />
-              </div>
+              <img src="/circulo2.png" className="hero-image-circulo" alt="BJA Babissanga - Logística e Transporte" />
             </div>
           </div>
         </div>

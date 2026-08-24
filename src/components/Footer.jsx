@@ -38,8 +38,10 @@ const Footer = () => {
               Segurança, transparência e pontualidade na logística global de mercadorias.
             </p>
           </div>
-          <h2>Vamos mover<br />o <em>futuro.</em></h2>
-          <a className="round-link" href={`mailto:${email}`} aria-label="Enviar email geral">↗</a>
+          <div className="footer-cta-group">
+            <h2>Vamos mover<br />o <em>futuro.</em></h2>
+            <a className="round-link" href={`mailto:${email}`} aria-label="Enviar email geral">↗</a>
+          </div>
         </div>
 
         <div className="footer-details">
