@@ -1,8 +1,21 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useSiteData } from '../context/SiteDataContext';
 
 const Home = () => {
-  const { fleetData } = useSiteData();
+  const { fleetData, heroSlides } = useSiteData();
+  const [currentBg, setCurrentBg] = useState(0);
+
+  const activeSlides = heroSlides && heroSlides.length > 0
+    ? heroSlides
+    : [{ id: 'default', url: '/bg1.jpg', label: 'Operação Portuária' }];
+
+  useEffect(() => {
+    if (activeSlides.length <= 1) return;
+    const timer = setInterval(() => {
+      setCurrentBg(prev => (prev + 1) % activeSlides.length);
+    }, 5500);
+    return () => clearInterval(timer);
+  }, [activeSlides.length]);
 
   const volvo = fleetData.find(f => f.id === 'volvo') || {};
   const steelbro = fleetData.find(f => f.id === 'steelbro') || {};
@@ -12,6 +25,17 @@ const Home = () => {
     <>
       {/* Hero Section */}
       <section className="hero">
+        <div className="hero-bg-carousel">
+          {activeSlides.map((imgObj, idx) => (
+            <div
+              key={imgObj.id || idx}
+              className={`hero-bg-slide ${idx === currentBg ? 'active' : ''}`}
+              style={{ backgroundImage: `url(${imgObj.url})` }}
+            />
+          ))}
+          <div className="hero-bg-overlay" />
+        </div>
+
         <div className="container">
           <div className="hero-grid">
             <div className="hero-text animate-fade-in-up">
@@ -29,6 +53,19 @@ const Home = () => {
             </div>
           </div>
         </div>
+
+        {activeSlides.length > 1 && (
+          <div className="hero-carousel-dots">
+            {activeSlides.map((_, idx) => (
+              <button
+                key={idx}
+                className={`hero-dot ${idx === currentBg ? 'active' : ''}`}
+                onClick={() => setCurrentBg(idx)}
+                aria-label={`Ver imagem ${idx + 1}`}
+              />
+            ))}
+          </div>
+        )}
         
         <div className="hero-bottom-bar">
           <div className="hero-routes">

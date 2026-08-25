@@ -7,8 +7,15 @@ const STORAGE_KEYS = {
   FLEET: 'babissanga_fleet_data_v2',
   MESSAGES: 'babissanga_messages_v2',
   AUTH: 'babissanga_auth_v2',
-  ADMIN_CREDENTIALS: 'babissanga_admin_cred_v2'
+  ADMIN_CREDENTIALS: 'babissanga_admin_cred_v2',
+  HERO_SLIDES: 'babissanga_hero_slides_v2'
 };
+
+const DEFAULT_HERO_SLIDES = [
+  { id: 'slide_1', url: '/bg1.jpg', label: 'Operação Portuária & Carga Pesada' },
+  { id: 'slide_2', url: '/bg2.jpg', label: 'Frota & Equipa Babissanga' },
+  { id: 'slide_3', url: '/bg3.jpeg', label: 'Logística de Contentores & Aduana' }
+];
 
 const DEFAULT_FOOTER = {
   phone: '+244 921 508 050',
@@ -192,6 +199,16 @@ export const SiteDataProvider = ({ children }) => {
     }
   });
 
+  // Hero Background Slides
+  const [heroSlides, setHeroSlides] = useState(() => {
+    try {
+      const saved = localStorage.getItem(STORAGE_KEYS.HERO_SLIDES);
+      return saved ? JSON.parse(saved) : DEFAULT_HERO_SLIDES;
+    } catch {
+      return DEFAULT_HERO_SLIDES;
+    }
+  });
+
   // Save changes to localStorage
   useEffect(() => {
     try {
@@ -216,6 +233,14 @@ export const SiteDataProvider = ({ children }) => {
       console.error('Error saving messages', e);
     }
   }, [messages]);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(STORAGE_KEYS.HERO_SLIDES, JSON.stringify(heroSlides));
+    } catch (e) {
+      console.error('Error saving hero slides', e);
+    }
+  }, [heroSlides]);
 
   // Actions
   const addMessage = (msg) => {
@@ -253,11 +278,55 @@ export const SiteDataProvider = ({ children }) => {
     setFleetData(prev => prev.map(v => v.id === id ? { ...v, ...details } : v));
   };
 
+  const addVehicle = (vehicleData) => {
+    const newVehicle = {
+      id: 'v_' + Date.now(),
+      name: vehicleData.name || 'Novo Veículo',
+      type: vehicleData.type || 'Equipamento Logístico',
+      description: vehicleData.description || 'Descrição das especificações técnicas do veículo.',
+      image: vehicleData.image || '/volvo.jpeg',
+      specs: vehicleData.specs || {
+        'Capacidade': 'Sob Consulta',
+        'Estado': 'Operacional'
+      },
+      badge: vehicleData.badge || 'Frota BJA',
+      badgeColor: vehicleData.badgeColor || 'primary',
+      autoMessage: vehicleData.autoMessage || `Gostaria de solicitar cotação para o equipamento: ${vehicleData.name || 'Novo Veículo'}.`
+    };
+    setFleetData(prev => [...prev, newVehicle]);
+    return newVehicle;
+  };
+
+  const deleteVehicle = (id) => {
+    setFleetData(prev => prev.filter(v => v.id !== id));
+  };
+
+  // Hero Slide Actions
+  const addHeroSlide = (slideData) => {
+    const newSlide = {
+      id: 'slide_' + Date.now(),
+      url: slideData.url || '/bg1.jpg',
+      label: slideData.label || 'Nova Imagem do Fundo'
+    };
+    setHeroSlides(prev => [...prev, newSlide]);
+    return newSlide;
+  };
+
+  const deleteHeroSlide = (id) => {
+    setHeroSlides(prev => prev.filter(s => s.id !== id));
+  };
+
+  const updateHeroSlide = (id, slideData) => {
+    setHeroSlides(prev => prev.map(s => s.id === id ? { ...s, ...slideData } : s));
+  };
+
   const resetAllToDefaults = () => {
     setFooterData(DEFAULT_FOOTER);
     setFleetData(DEFAULT_FLEET);
+    setHeroSlides(DEFAULT_HERO_SLIDES);
     localStorage.removeItem(STORAGE_KEYS.FOOTER);
     localStorage.removeItem(STORAGE_KEYS.FLEET);
+    localStorage.removeItem(STORAGE_KEYS.HERO_SLIDES);
   };
 
   return (
@@ -266,6 +335,7 @@ export const SiteDataProvider = ({ children }) => {
         footerData,
         fleetData,
         messages,
+        heroSlides,
         addMessage,
         updateMessageStatus,
         deleteMessage,
@@ -273,6 +343,11 @@ export const SiteDataProvider = ({ children }) => {
         updateVehicleImage,
         updateVehicleAutoMessage,
         updateVehicleDetails,
+        addVehicle,
+        deleteVehicle,
+        addHeroSlide,
+        deleteHeroSlide,
+        updateHeroSlide,
         resetAllToDefaults
       }}
     >

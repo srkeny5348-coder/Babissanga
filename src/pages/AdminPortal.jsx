@@ -58,16 +58,37 @@ const IconUpload = () => (
   </svg>
 );
 
+const IconPlus = () => (
+  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <line x1="12" y1="5" x2="12" y2="19" />
+    <line x1="5" y1="12" x2="19" y2="12" />
+  </svg>
+);
+
+const IconEdit = () => (
+  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+  </svg>
+);
+
 const AdminPortal = () => {
   const {
     footerData,
     fleetData,
     messages,
+    heroSlides,
     updateMessageStatus,
     deleteMessage,
     updateFooter,
     updateVehicleImage,
     updateVehicleAutoMessage,
+    updateVehicleDetails,
+    addVehicle,
+    deleteVehicle,
+    addHeroSlide,
+    deleteHeroSlide,
+    updateHeroSlide,
     resetAllToDefaults
   } = useSiteData();
 
@@ -94,6 +115,91 @@ const AdminPortal = () => {
   const showToast = (msg) => {
     setToastMessage(msg);
     setTimeout(() => setToastMessage(''), 4000);
+  };
+
+  // Fleet Vehicle Add / Edit Modal state
+  const [isVehicleModalOpen, setIsVehicleModalOpen] = useState(false);
+  const [editingVehicle, setEditingVehicle] = useState(null);
+  const [vehicleForm, setVehicleForm] = useState({
+    name: '',
+    type: '',
+    description: '',
+    image: '',
+    badge: 'Frota BJA',
+    capacidade: '',
+    motor: '',
+    tracao: '',
+    idealPara: '',
+    estado: 'Operacional',
+    autoMessage: ''
+  });
+
+  const openAddVehicleModal = () => {
+    setEditingVehicle(null);
+    setVehicleForm({
+      name: '',
+      type: '',
+      description: '',
+      image: '/volvo.jpeg',
+      badge: 'Frota BJA',
+      capacidade: '30 Toneladas',
+      motor: '420 CV',
+      tracao: '6x4',
+      idealPara: 'Transporte de Carga Geral',
+      estado: 'Operacional',
+      autoMessage: ''
+    });
+    setIsVehicleModalOpen(true);
+  };
+
+  const openEditVehicleModal = (vehicle) => {
+    setEditingVehicle(vehicle);
+    setVehicleForm({
+      name: vehicle.name || '',
+      type: vehicle.type || '',
+      description: vehicle.description || '',
+      image: vehicle.image || '',
+      badge: vehicle.badge || 'Frota BJA',
+      capacidade: vehicle.specs?.['Capacidade'] || vehicle.specs?.['Capacidade de Elevação'] || '',
+      motor: vehicle.specs?.['Motor'] || vehicle.specs?.['Combustível'] || '',
+      tracao: vehicle.specs?.['Tração'] || vehicle.specs?.['Compatibilidade'] || '',
+      idealPara: vehicle.specs?.['Ideal Para'] || vehicle.specs?.['Operação'] || '',
+      estado: vehicle.specs?.['Estado'] || 'Operacional',
+      autoMessage: vehicle.autoMessage || ''
+    });
+    setIsVehicleModalOpen(true);
+  };
+
+  const handleVehicleFormSubmit = (e) => {
+    e.preventDefault();
+    const specsObj = {
+      'Capacidade': vehicleForm.capacidade || 'Sob Consulta',
+      'Motor / Potência': vehicleForm.motor || 'Padrão BJA',
+      'Configuração': vehicleForm.tracao || 'Padrão',
+      'Ideal Para': vehicleForm.idealPara || 'Logística e Transporte',
+      'Estado': vehicleForm.estado || 'Operacional'
+    };
+
+    const vehiclePayload = {
+      name: vehicleForm.name,
+      type: vehicleForm.type,
+      description: vehicleForm.description,
+      image: vehicleForm.image || '/volvo.jpeg',
+      badge: vehicleForm.badge || 'Frota BJA',
+      badgeColor: 'primary',
+      specs: specsObj,
+      autoMessage: vehicleForm.autoMessage || `Gostaria de solicitar cotação para o equipamento: ${vehicleForm.name}.`
+    };
+
+    if (editingVehicle) {
+      updateVehicleDetails(editingVehicle.id, vehiclePayload);
+      showToast(`Veículo "${vehicleForm.name}" atualizado com sucesso!`);
+    } else {
+      addVehicle(vehiclePayload);
+      showToast(`Novo veículo "${vehicleForm.name}" adicionado à frota!`);
+    }
+
+    setIsVehicleModalOpen(false);
   };
 
   // Login handler
@@ -145,6 +251,43 @@ const AdminPortal = () => {
     e.preventDefault();
     updateFooter(footerForm);
     showToast('Dados de contacto e rodapé atualizados com sucesso.');
+  };
+
+  // Hero Slides Modal state
+  const [isHeroModalOpen, setIsHeroModalOpen] = useState(false);
+  const [heroForm, setHeroForm] = useState({
+    url: '/bg1.jpg',
+    label: ''
+  });
+
+  const handleHeroFormSubmit = (e) => {
+    e.preventDefault();
+    if (!heroForm.url) {
+      alert('Por favor introduza o URL ou carregue uma imagem.');
+      return;
+    }
+    addHeroSlide({
+      url: heroForm.url,
+      label: heroForm.label || 'Imagem de Fundo do Hero'
+    });
+    showToast('Nova imagem de fundo adicionada ao carrossel do Hero.');
+    setIsHeroModalOpen(false);
+    setHeroForm({ url: '/bg1.jpg', label: '' });
+  };
+
+  const handleHeroFileUpload = (slideId, e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    if (!file.type.startsWith('image/')) {
+      alert('Por favor selecione um ficheiro de imagem válido.');
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      updateHeroSlide(slideId, { url: event.target.result });
+      showToast('Fotografia de fundo do Hero atualizada com sucesso.');
+    };
+    reader.readAsDataURL(file);
   };
 
   // Image Upload Handler using FileReader (Data URL)
@@ -304,7 +447,15 @@ const AdminPortal = () => {
               onClick={() => setActiveTab('images')}
             >
               <span className="admin-nav-icon"><IconImages /></span>
-              <span className="admin-nav-label">Gestor de Imagens</span>
+              <span className="admin-nav-label">Gestor de Frota</span>
+            </button>
+
+            <button
+              className={`admin-nav-btn ${activeTab === 'herobg' ? 'active' : ''}`}
+              onClick={() => setActiveTab('herobg')}
+            >
+              <span className="admin-nav-icon"><IconImages /></span>
+              <span className="admin-nav-label">Fundo do Hero (Carrossel)</span>
             </button>
 
             <button
@@ -494,14 +645,17 @@ const AdminPortal = () => {
             </div>
           )}
 
-          {/* TAB 2: IMAGE MANAGER */}
+          {/* TAB 2: GESTOR DE FROTA E IMAGENS */}
           {activeTab === 'images' && (
             <div className="admin-tab-content">
-              <div className="admin-page-header">
+              <div className="admin-page-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px' }}>
                 <div>
-                  <h2>Gestor de Imagens da Frota e Website</h2>
-                  <p>Altere as fotografias dos veículos e equipamentos. As novas imagens serão exibidas instantaneamente no website público.</p>
+                  <h2>Gestor de Frota e Imagens</h2>
+                  <p>Adicione novos veículos, edite informações técnicas, carregue fotografias e faça a gestão completa dos equipamentos exibidos no site.</p>
                 </div>
+                <button onClick={openAddVehicleModal} className="btn btn-primary" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
+                  <IconPlus /> Adicionar Novo Veículo
+                </button>
               </div>
 
               <div className="admin-images-grid">
@@ -514,13 +668,21 @@ const AdminPortal = () => {
 
                     <div className="admin-image-card-body">
                       <h4>{vehicle.name}</h4>
-                      <p style={{ fontSize: '13px', color: '#64748B', marginBottom: '16px' }}>
-                        Imagem atual em exibição na galeria e na ficha técnica.
+                      <p style={{ fontSize: '13px', color: '#64748B', marginBottom: '12px' }}>
+                        {vehicle.description ? (vehicle.description.slice(0, 90) + '...') : 'Sem descrição.'}
                       </p>
 
-                      <div className="admin-image-actions">
-                        <label className="btn-admin-upload" style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
-                          <IconUpload /> Carregar Nova Imagem
+                      <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginBottom: '16px' }}>
+                        <button
+                          onClick={() => openEditVehicleModal(vehicle)}
+                          className="btn-table-action view"
+                          style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}
+                        >
+                          <IconEdit /> Editar Veículo
+                        </button>
+
+                        <label className="btn-table-action" style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', cursor: 'pointer', background: '#F1F5F9', border: '1px solid #CBD5E1', padding: '6px 12px', borderRadius: '4px', fontSize: '12px', color: '#0F172A' }}>
+                          <IconUpload /> Alterar Foto
                           <input
                             type="file"
                             accept="image/*"
@@ -528,10 +690,24 @@ const AdminPortal = () => {
                             style={{ display: 'none' }}
                           />
                         </label>
+
+                        <button
+                          onClick={() => {
+                            if (window.confirm(`Tem a certeza que deseja eliminar o veículo "${vehicle.name}" da frota?`)) {
+                              deleteVehicle(vehicle.id);
+                              showToast(`Veículo "${vehicle.name}" eliminado.`);
+                            }
+                          }}
+                          className="btn-table-action delete"
+                          title="Eliminar Veículo da Frota"
+                          style={{ display: 'inline-flex', alignItems: 'center' }}
+                        >
+                          <IconTrash />
+                        </button>
                       </div>
 
-                      <div style={{ marginTop: '12px' }}>
-                        <small style={{ color: '#64748B', display: 'block', marginBottom: '4px' }}>Ou introduza o URL da imagem:</small>
+                      <div>
+                        <small style={{ color: '#64748B', display: 'block', marginBottom: '4px' }}>URL Direto da Imagem:</small>
                         <div style={{ display: 'flex', gap: '8px' }}>
                           <input
                             type="text"
@@ -546,6 +722,88 @@ const AdminPortal = () => {
                             className="admin-input-sm"
                           />
                         </div>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* TAB: HERO BACKGROUND CAROUSEL IMAGES */}
+          {activeTab === 'herobg' && (
+            <div className="admin-tab-content">
+              <div className="admin-page-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px' }}>
+                <div>
+                  <h2>Imagens de Fundo do Hero (Carrossel)</h2>
+                  <p>Adicione ou remova as imagens que alternam automaticamente no fundo da página inicial do site público.</p>
+                </div>
+                <button onClick={() => setIsHeroModalOpen(true)} className="btn btn-primary" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
+                  <IconPlus /> Adicionar Imagem ao Fundo
+                </button>
+              </div>
+
+              <div className="admin-images-grid">
+                {heroSlides.map((slide, idx) => (
+                  <div key={slide.id} className="admin-image-card">
+                    <div className="admin-image-preview-box" style={{ height: '180px' }}>
+                      <img src={slide.url} alt={slide.label} />
+                      <span className="admin-image-badge">Slide #{idx + 1}</span>
+                    </div>
+
+                    <div className="admin-image-card-body">
+                      <h4 style={{ marginBottom: '8px' }}>{slide.label || `Slide #${idx + 1}`}</h4>
+
+                      <div style={{ marginBottom: '12px' }}>
+                        <small style={{ color: '#64748B', display: 'block', marginBottom: '4px' }}>Título / Descrição da Imagem:</small>
+                        <input
+                          type="text"
+                          value={slide.label}
+                          onChange={(e) => updateHeroSlide(slide.id, { label: e.target.value })}
+                          className="admin-input-sm"
+                          placeholder="Ex: Operação Portuária..."
+                        />
+                      </div>
+
+                      <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginBottom: '12px' }}>
+                        <label className="btn-table-action" style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', cursor: 'pointer', background: '#F1F5F9', border: '1px solid #CBD5E1', padding: '6px 12px', borderRadius: '4px', fontSize: '12px', color: '#0F172A' }}>
+                          <IconUpload /> Carregar Ficheiro
+                          <input
+                            type="file"
+                            accept="image/*"
+                            onChange={(e) => handleHeroFileUpload(slide.id, e)}
+                            style={{ display: 'none' }}
+                          />
+                        </label>
+
+                        <button
+                          onClick={() => {
+                            if (heroSlides.length <= 1) {
+                              alert('Aviso: Deve manter pelo menos 1 imagem no fundo do Hero.');
+                              return;
+                            }
+                            if (window.confirm(`Tem a certeza que deseja remover esta imagem do carrossel do Hero?`)) {
+                              deleteHeroSlide(slide.id);
+                              showToast('Imagem removida do carrossel do Hero.');
+                            }
+                          }}
+                          className="btn-table-action delete"
+                          title="Remover imagem do carrossel"
+                          style={{ display: 'inline-flex', alignItems: 'center' }}
+                        >
+                          <IconTrash /> Remover
+                        </button>
+                      </div>
+
+                      <div>
+                        <small style={{ color: '#64748B', display: 'block', marginBottom: '4px' }}>URL Direto da Imagem:</small>
+                        <input
+                          type="text"
+                          value={slide.url.startsWith('data:') ? '' : slide.url}
+                          onChange={(e) => updateHeroSlide(slide.id, { url: e.target.value })}
+                          placeholder="https://exemplo.com/foto.jpg"
+                          className="admin-input-sm"
+                        />
                       </div>
                     </div>
                   </div>
@@ -904,6 +1162,245 @@ const AdminPortal = () => {
                 </button>
               </div>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Vehicle Add / Edit Modal */}
+      {isVehicleModalOpen && (
+        <div className="lightbox" onClick={() => setIsVehicleModalOpen(false)}>
+          <div className="lightbox-content admin-vehicle-modal" onClick={(e) => e.stopPropagation()} style={{ display: 'block', padding: '32px', maxWidth: '720px', width: '90%', maxHeight: '90vh', overflowY: 'auto' }}>
+            <button className="lightbox-close" onClick={() => setIsVehicleModalOpen(false)}>
+              &times;
+            </button>
+
+            <span className="eyebrow dark"><i></i> GESTÃO DA FROTA</span>
+            <h2 style={{ fontSize: '24px', color: '#001C46', marginBottom: '20px' }}>
+              {editingVehicle ? `Editar Veículo: ${editingVehicle.name}` : 'Adicionar Novo Veículo à Frota'}
+            </h2>
+
+            <form onSubmit={handleVehicleFormSubmit}>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '20px' }}>
+                <div style={{ gridColumn: 'span 2' }}>
+                  <label className="admin-label" style={{ display: 'block', fontSize: '12px', fontWeight: '700', color: '#001C46', marginBottom: '6px' }}>Nome do Veículo / Equipamento *</label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="Ex: Camião Scania R500"
+                    value={vehicleForm.name}
+                    onChange={(e) => setVehicleForm({ ...vehicleForm, name: e.target.value })}
+                    className="admin-input-sm"
+                    style={{ width: '100%', padding: '10px 14px' }}
+                  />
+                </div>
+
+                <div>
+                  <label className="admin-label" style={{ display: 'block', fontSize: '12px', fontWeight: '700', color: '#001C46', marginBottom: '6px' }}>Tipo / Categoria *</label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="Ex: Pesado de Carga Geral"
+                    value={vehicleForm.type}
+                    onChange={(e) => setVehicleForm({ ...vehicleForm, type: e.target.value })}
+                    className="admin-input-sm"
+                    style={{ width: '100%', padding: '10px 14px' }}
+                  />
+                </div>
+
+                <div>
+                  <label className="admin-label" style={{ display: 'block', fontSize: '12px', fontWeight: '700', color: '#001C46', marginBottom: '6px' }}>Etiqueta / Badge</label>
+                  <input
+                    type="text"
+                    placeholder="Ex: Destaque, Novo, Alta Capacidade"
+                    value={vehicleForm.badge}
+                    onChange={(e) => setVehicleForm({ ...vehicleForm, badge: e.target.value })}
+                    className="admin-input-sm"
+                    style={{ width: '100%', padding: '10px 14px' }}
+                  />
+                </div>
+
+                <div style={{ gridColumn: 'span 2' }}>
+                  <label className="admin-label" style={{ display: 'block', fontSize: '12px', fontWeight: '700', color: '#001C46', marginBottom: '6px' }}>Descrição Detalhada *</label>
+                  <textarea
+                    required
+                    rows="3"
+                    placeholder="Descrição completa do veículo para exibição na ficha técnica..."
+                    value={vehicleForm.description}
+                    onChange={(e) => setVehicleForm({ ...vehicleForm, description: e.target.value })}
+                    style={{ width: '100%', padding: '10px 14px', borderRadius: '6px', border: '1px solid #CBD5E1', fontSize: '14px' }}
+                  />
+                </div>
+
+                <div>
+                  <label className="admin-label" style={{ display: 'block', fontSize: '12px', fontWeight: '700', color: '#001C46', marginBottom: '6px' }}>Capacidade de Carga</label>
+                  <input
+                    type="text"
+                    placeholder="Ex: 40 Toneladas"
+                    value={vehicleForm.capacidade}
+                    onChange={(e) => setVehicleForm({ ...vehicleForm, capacidade: e.target.value })}
+                    className="admin-input-sm"
+                    style={{ width: '100%', padding: '10px 14px' }}
+                  />
+                </div>
+
+                <div>
+                  <label className="admin-label" style={{ display: 'block', fontSize: '12px', fontWeight: '700', color: '#001C46', marginBottom: '6px' }}>Motor / Potência</label>
+                  <input
+                    type="text"
+                    placeholder="Ex: 420 CV / V8"
+                    value={vehicleForm.motor}
+                    onChange={(e) => setVehicleForm({ ...vehicleForm, motor: e.target.value })}
+                    className="admin-input-sm"
+                    style={{ width: '100%', padding: '10px 14px' }}
+                  />
+                </div>
+
+                <div>
+                  <label className="admin-label" style={{ display: 'block', fontSize: '12px', fontWeight: '700', color: '#001C46', marginBottom: '6px' }}>Configuração / Tração</label>
+                  <input
+                    type="text"
+                    placeholder="Ex: 6x4 ou 20/40 Pés"
+                    value={vehicleForm.tracao}
+                    onChange={(e) => setVehicleForm({ ...vehicleForm, tracao: e.target.value })}
+                    className="admin-input-sm"
+                    style={{ width: '100%', padding: '10px 14px' }}
+                  />
+                </div>
+
+                <div>
+                  <label className="admin-label" style={{ display: 'block', fontSize: '12px', fontWeight: '700', color: '#001C46', marginBottom: '6px' }}>Ideal Para</label>
+                  <input
+                    type="text"
+                    placeholder="Ex: Contentores e Granéis"
+                    value={vehicleForm.idealPara}
+                    onChange={(e) => setVehicleForm({ ...vehicleForm, idealPara: e.target.value })}
+                    className="admin-input-sm"
+                    style={{ width: '100%', padding: '10px 14px' }}
+                  />
+                </div>
+
+                <div style={{ gridColumn: 'span 2' }}>
+                  <label className="admin-label" style={{ display: 'block', fontSize: '12px', fontWeight: '700', color: '#001C46', marginBottom: '6px' }}>URL da Imagem ou Carregar Ficheiro</label>
+                  <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                    <input
+                      type="text"
+                      placeholder="https://exemplo.com/foto.jpg"
+                      value={vehicleForm.image}
+                      onChange={(e) => setVehicleForm({ ...vehicleForm, image: e.target.value })}
+                      className="admin-input-sm"
+                      style={{ flex: 1, padding: '10px 14px' }}
+                    />
+                    <label className="btn btn-secondary" style={{ whiteSpace: 'nowrap', cursor: 'pointer', fontSize: '13px', padding: '10px 16px', display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+                      <IconUpload /> Ficheiro
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={(e) => {
+                          const file = e.target.files[0];
+                          if (file) {
+                            const reader = new FileReader();
+                            reader.onloadend = () => {
+                              setVehicleForm(prev => ({ ...prev, image: reader.result }));
+                            };
+                            reader.readAsDataURL(file);
+                          }
+                        }}
+                        style={{ display: 'none' }}
+                      />
+                    </label>
+                  </div>
+                </div>
+
+                <div style={{ gridColumn: 'span 2' }}>
+                  <label className="admin-label" style={{ display: 'block', fontSize: '12px', fontWeight: '700', color: '#001C46', marginBottom: '6px' }}>Mensagem Automática ao Solicitar Cotação</label>
+                  <textarea
+                    rows="2"
+                    placeholder="Texto pré-preenchido quando o cliente escolhe este veículo..."
+                    value={vehicleForm.autoMessage}
+                    onChange={(e) => setVehicleForm({ ...vehicleForm, autoMessage: e.target.value })}
+                    style={{ width: '100%', padding: '10px 14px', borderRadius: '6px', border: '1px solid #CBD5E1', fontSize: '14px' }}
+                  />
+                </div>
+              </div>
+
+              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px', paddingTop: '16px', borderTop: '1px solid #E2E8F0' }}>
+                <button type="button" className="btn btn-outline" onClick={() => setIsVehicleModalOpen(false)}>
+                  Cancelar
+                </button>
+                <button type="submit" className="btn btn-primary">
+                  {editingVehicle ? 'Guardar Alterações' : 'Adicionar Veículo'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Hero Slide Add Modal */}
+      {isHeroModalOpen && (
+        <div className="lightbox" onClick={() => setIsHeroModalOpen(false)}>
+          <div className="lightbox-content" onClick={(e) => e.stopPropagation()} style={{ display: 'block', padding: '32px', maxWidth: '540px', width: '90%' }}>
+            <button className="lightbox-close" onClick={() => setIsHeroModalOpen(false)}>
+              &times;
+            </button>
+
+            <span className="eyebrow dark"><i></i> CARROSSEL PRINCIPAL</span>
+            <h2 style={{ fontSize: '22px', color: '#001C46', marginBottom: '16px' }}>Adicionar Imagem ao Fundo do Hero</h2>
+
+            <form onSubmit={handleHeroFormSubmit}>
+              <div style={{ marginBottom: '16px' }}>
+                <label className="admin-label" style={{ display: 'block', fontSize: '12px', fontWeight: '700', color: '#001C46', marginBottom: '6px' }}>Descrição / Rótulo da Imagem</label>
+                <input
+                  type="text"
+                  placeholder="Ex: Camiões e Logística Terrestre"
+                  value={heroForm.label}
+                  onChange={(e) => setHeroForm({ ...heroForm, label: e.target.value })}
+                  className="admin-input-sm"
+                  style={{ width: '100%', padding: '10px 14px' }}
+                />
+              </div>
+
+              <div style={{ marginBottom: '20px' }}>
+                <label className="admin-label" style={{ display: 'block', fontSize: '12px', fontWeight: '700', color: '#001C46', marginBottom: '6px' }}>Escolher Ficheiro ou Introduzir URL</label>
+                <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                  <input
+                    type="text"
+                    placeholder="https://exemplo.com/foto.jpg ou /bg1.jpg"
+                    value={heroForm.url}
+                    onChange={(e) => setHeroForm({ ...heroForm, url: e.target.value })}
+                    className="admin-input-sm"
+                    style={{ flex: 1, padding: '10px 14px' }}
+                  />
+                  <label className="btn btn-secondary" style={{ whiteSpace: 'nowrap', cursor: 'pointer', fontSize: '13px', padding: '10px 16px', display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+                    <IconUpload /> Ficheiro
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={(e) => {
+                        const file = e.target.files[0];
+                        if (file) {
+                          const reader = new FileReader();
+                          reader.onloadend = () => {
+                            setHeroForm(prev => ({ ...prev, url: reader.result }));
+                          };
+                          reader.readAsDataURL(file);
+                        }
+                      }}
+                      style={{ display: 'none' }}
+                    />
+                  </label>
+                </div>
+              </div>
+
+              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px', paddingTop: '16px', borderTop: '1px solid #E2E8F0' }}>
+                <button type="button" className="btn btn-outline" onClick={() => setIsHeroModalOpen(false)}>
+                  Cancelar
+                </button>
+                <button type="submit" className="btn btn-primary">
+                  Adicionar ao Carrossel
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       )}
