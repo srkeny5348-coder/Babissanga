@@ -447,15 +447,7 @@ const AdminPortal = () => {
               onClick={() => setActiveTab('images')}
             >
               <span className="admin-nav-icon"><IconImages /></span>
-              <span className="admin-nav-label">Gestor de Frota</span>
-            </button>
-
-            <button
-              className={`admin-nav-btn ${activeTab === 'herobg' ? 'active' : ''}`}
-              onClick={() => setActiveTab('herobg')}
-            >
-              <span className="admin-nav-icon"><IconImages /></span>
-              <span className="admin-nav-label">Fundo do Hero (Carrossel)</span>
+              <span className="admin-nav-label">Gestor de Frota e Imagens</span>
             </button>
 
             <button
@@ -730,87 +722,7 @@ const AdminPortal = () => {
             </div>
           )}
 
-          {/* TAB: HERO BACKGROUND CAROUSEL IMAGES */}
-          {activeTab === 'herobg' && (
-            <div className="admin-tab-content">
-              <div className="admin-page-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px' }}>
-                <div>
-                  <h2>Imagens de Fundo do Hero (Carrossel)</h2>
-                  <p>Adicione ou remova as imagens que alternam automaticamente no fundo da página inicial do site público.</p>
-                </div>
-                <button onClick={() => setIsHeroModalOpen(true)} className="btn btn-primary" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
-                  <IconPlus /> Adicionar Imagem ao Fundo
-                </button>
-              </div>
 
-              <div className="admin-images-grid">
-                {heroSlides.map((slide, idx) => (
-                  <div key={slide.id} className="admin-image-card">
-                    <div className="admin-image-preview-box" style={{ height: '180px' }}>
-                      <img src={slide.url} alt={slide.label} />
-                      <span className="admin-image-badge">Slide #{idx + 1}</span>
-                    </div>
-
-                    <div className="admin-image-card-body">
-                      <h4 style={{ marginBottom: '8px' }}>{slide.label || `Slide #${idx + 1}`}</h4>
-
-                      <div style={{ marginBottom: '12px' }}>
-                        <small style={{ color: '#64748B', display: 'block', marginBottom: '4px' }}>Título / Descrição da Imagem:</small>
-                        <input
-                          type="text"
-                          value={slide.label}
-                          onChange={(e) => updateHeroSlide(slide.id, { label: e.target.value })}
-                          className="admin-input-sm"
-                          placeholder="Ex: Operação Portuária..."
-                        />
-                      </div>
-
-                      <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginBottom: '12px' }}>
-                        <label className="btn-table-action" style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', cursor: 'pointer', background: '#F1F5F9', border: '1px solid #CBD5E1', padding: '6px 12px', borderRadius: '4px', fontSize: '12px', color: '#0F172A' }}>
-                          <IconUpload /> Carregar Ficheiro
-                          <input
-                            type="file"
-                            accept="image/*"
-                            onChange={(e) => handleHeroFileUpload(slide.id, e)}
-                            style={{ display: 'none' }}
-                          />
-                        </label>
-
-                        <button
-                          onClick={() => {
-                            if (heroSlides.length <= 1) {
-                              alert('Aviso: Deve manter pelo menos 1 imagem no fundo do Hero.');
-                              return;
-                            }
-                            if (window.confirm(`Tem a certeza que deseja remover esta imagem do carrossel do Hero?`)) {
-                              deleteHeroSlide(slide.id);
-                              showToast('Imagem removida do carrossel do Hero.');
-                            }
-                          }}
-                          className="btn-table-action delete"
-                          title="Remover imagem do carrossel"
-                          style={{ display: 'inline-flex', alignItems: 'center' }}
-                        >
-                          <IconTrash /> Remover
-                        </button>
-                      </div>
-
-                      <div>
-                        <small style={{ color: '#64748B', display: 'block', marginBottom: '4px' }}>URL Direto da Imagem:</small>
-                        <input
-                          type="text"
-                          value={slide.url.startsWith('data:') ? '' : slide.url}
-                          onChange={(e) => updateHeroSlide(slide.id, { url: e.target.value })}
-                          placeholder="https://exemplo.com/foto.jpg"
-                          className="admin-input-sm"
-                        />
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
 
           {/* TAB 3: AUTOMATIC FLEET MESSAGES */}
           {activeTab === 'automessages' && (
@@ -1336,74 +1248,7 @@ const AdminPortal = () => {
         </div>
       )}
 
-      {/* Hero Slide Add Modal */}
-      {isHeroModalOpen && (
-        <div className="lightbox" onClick={() => setIsHeroModalOpen(false)}>
-          <div className="lightbox-content" onClick={(e) => e.stopPropagation()} style={{ display: 'block', padding: '32px', maxWidth: '540px', width: '90%' }}>
-            <button className="lightbox-close" onClick={() => setIsHeroModalOpen(false)}>
-              &times;
-            </button>
 
-            <span className="eyebrow dark"><i></i> CARROSSEL PRINCIPAL</span>
-            <h2 style={{ fontSize: '22px', color: '#001C46', marginBottom: '16px' }}>Adicionar Imagem ao Fundo do Hero</h2>
-
-            <form onSubmit={handleHeroFormSubmit}>
-              <div style={{ marginBottom: '16px' }}>
-                <label className="admin-label" style={{ display: 'block', fontSize: '12px', fontWeight: '700', color: '#001C46', marginBottom: '6px' }}>Descrição / Rótulo da Imagem</label>
-                <input
-                  type="text"
-                  placeholder="Ex: Camiões e Logística Terrestre"
-                  value={heroForm.label}
-                  onChange={(e) => setHeroForm({ ...heroForm, label: e.target.value })}
-                  className="admin-input-sm"
-                  style={{ width: '100%', padding: '10px 14px' }}
-                />
-              </div>
-
-              <div style={{ marginBottom: '20px' }}>
-                <label className="admin-label" style={{ display: 'block', fontSize: '12px', fontWeight: '700', color: '#001C46', marginBottom: '6px' }}>Escolher Ficheiro ou Introduzir URL</label>
-                <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
-                  <input
-                    type="text"
-                    placeholder="https://exemplo.com/foto.jpg ou /bg1.jpg"
-                    value={heroForm.url}
-                    onChange={(e) => setHeroForm({ ...heroForm, url: e.target.value })}
-                    className="admin-input-sm"
-                    style={{ flex: 1, padding: '10px 14px' }}
-                  />
-                  <label className="btn btn-secondary" style={{ whiteSpace: 'nowrap', cursor: 'pointer', fontSize: '13px', padding: '10px 16px', display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
-                    <IconUpload /> Ficheiro
-                    <input
-                      type="file"
-                      accept="image/*"
-                      onChange={(e) => {
-                        const file = e.target.files[0];
-                        if (file) {
-                          const reader = new FileReader();
-                          reader.onloadend = () => {
-                            setHeroForm(prev => ({ ...prev, url: reader.result }));
-                          };
-                          reader.readAsDataURL(file);
-                        }
-                      }}
-                      style={{ display: 'none' }}
-                    />
-                  </label>
-                </div>
-              </div>
-
-              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px', paddingTop: '16px', borderTop: '1px solid #E2E8F0' }}>
-                <button type="button" className="btn btn-outline" onClick={() => setIsHeroModalOpen(false)}>
-                  Cancelar
-                </button>
-                <button type="submit" className="btn btn-primary">
-                  Adicionar ao Carrossel
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
     </div>
   );
 };
