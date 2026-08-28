@@ -1971,6 +1971,9 @@ img {
     padding-bottom: 80px;
     min-height: auto;
   }
+  .hero-carousel-dots {
+    bottom: 57px;
+  }
   .hero-grid {
     grid-template-columns: 1fr;
     gap: 32px;
