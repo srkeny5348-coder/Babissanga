@@ -56,10 +56,22 @@ function MainApp() {
     };
   }, []);
 
-  const handleSelectEquipment = (vehicle) => {
-    const message =
+  const handleSelectEquipment = (vehicle, simulationResult) => {
+    let message =
       vehicle.autoMessage ||
       `Gostaria de solicitar cotação para o equipamento: ${vehicle.name} (${vehicle.type}).`;
+
+    if (simulationResult) {
+      const formattedTotal = new Intl.NumberFormat('pt-AO', {
+        style: 'currency',
+        currency: simulationResult.currency || 'AOA',
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0
+      }).format(simulationResult.total);
+
+      message += `\n\n[SIMULAÇÃO DE FRETE REALIZADA]\n• Origem: ${simulationResult.origin}\n• Destino: ${simulationResult.destination}\n• Distância: ${simulationResult.distanceKm} km\n• Estimativa de Frete: ${formattedTotal}`;
+    }
+
     setInitialMessage(message);
     window.location.hash = '#/contacto';
   };

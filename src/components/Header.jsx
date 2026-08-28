@@ -32,7 +32,7 @@ const Header = ({ currentPage }) => {
     <>
       <header className={`site-header ${scrolled ? 'scrolled' : ''}`}>
         <a className="brand" href="#/" aria-label="BJA Babissanga inicial">
-          <img src="/logo.jpeg" alt="BJA Babissanga Logo" />
+          <img src="/NLogo.png" alt="BJA Babissanga Logo" />
         </a>
         
         <nav className="nav" aria-label="Navegação principal">

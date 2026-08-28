@@ -36,6 +36,30 @@ const IconShield = () => (
   </svg>
 );
 
+const IconTruck = () => (
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <rect x="1" y="3" width="15" height="13" />
+    <polygon points="16 8 20 8 23 11 23 16 16 16 16 8" />
+    <circle cx="5.5" cy="18.5" r="2.5" />
+    <circle cx="18.5" cy="18.5" r="2.5" />
+  </svg>
+);
+
+const IconLayers = () => (
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <polygon points="12 2 2 7 12 12 22 7 12 2" />
+    <polyline points="2 17 12 22 22 17" />
+    <polyline points="2 12 12 17 22 12" />
+  </svg>
+);
+
+const IconBriefcase = () => (
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <rect x="2" y="7" width="20" height="14" rx="2" ry="2" />
+    <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16" />
+  </svg>
+);
+
 const IconTrash = () => (
   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
     <polyline points="3 6 5 6 21 6" />
@@ -78,6 +102,8 @@ const AdminPortal = () => {
     fleetData,
     messages,
     heroSlides,
+    freightRates,
+    servicesData,
     updateMessageStatus,
     deleteMessage,
     updateFooter,
@@ -89,6 +115,16 @@ const AdminPortal = () => {
     addHeroSlide,
     deleteHeroSlide,
     updateHeroSlide,
+    addFreightRate,
+    updateFreightRate,
+    deleteFreightRate,
+    addService,
+    updateService,
+    deleteService,
+    partnersData,
+    addPartner,
+    updatePartner,
+    deletePartner,
     resetAllToDefaults
   } = useSiteData();
 
@@ -101,7 +137,7 @@ const AdminPortal = () => {
   const [password, setPassword] = useState('');
   const [loginError, setLoginError] = useState('');
 
-  // Active Tab: 'messages' | 'images' | 'automessages' | 'footer' | 'security'
+  // Active Tab: 'messages' | 'images' | 'carousel' | 'services' | 'freight' | 'footer' | 'security'
   const [activeTab, setActiveTab] = useState('messages');
 
   // Search & Filter for messages
@@ -117,6 +153,142 @@ const AdminPortal = () => {
     setTimeout(() => setToastMessage(''), 4000);
   };
 
+  // Services Add / Edit Modal state
+  const [isServiceModalOpen, setIsServiceModalOpen] = useState(false);
+  const [editingService, setEditingService] = useState(null);
+  const [serviceForm, setServiceForm] = useState({
+    name: '',
+    description: ''
+  });
+
+  const openAddServiceModal = () => {
+    setEditingService(null);
+    setServiceForm({
+      name: '',
+      description: ''
+    });
+    setIsServiceModalOpen(true);
+  };
+
+  const openEditServiceModal = (service) => {
+    setEditingService(service);
+    setServiceForm({
+      name: service.name || '',
+      description: service.description || ''
+    });
+    setIsServiceModalOpen(true);
+  };
+
+  const handleServiceFormSubmit = (e) => {
+    e.preventDefault();
+    const payload = {
+      name: serviceForm.name,
+      description: serviceForm.description
+    };
+
+    if (editingService) {
+      updateService(editingService.id, payload);
+      showToast(`Serviço "${serviceForm.name}" atualizado com sucesso!`);
+    } else {
+      addService(payload);
+      showToast(`Novo serviço "${serviceForm.name}" adicionado!`);
+    }
+    setIsServiceModalOpen(false);
+  };
+
+  // Partner Add / Edit Modal state
+  const [isPartnerModalOpen, setIsPartnerModalOpen] = useState(false);
+  const [editingPartner, setEditingPartner] = useState(null);
+  const [partnerForm, setPartnerForm] = useState({ name: '', logo: '' });
+
+  const openAddPartnerModal = () => {
+    setEditingPartner(null);
+    setPartnerForm({ name: '', logo: '' });
+    setIsPartnerModalOpen(true);
+  };
+
+  const openEditPartnerModal = (partner) => {
+    setEditingPartner(partner);
+    setPartnerForm({ name: partner.name || '', logo: partner.logo || '' });
+    setIsPartnerModalOpen(true);
+  };
+
+  const handlePartnerFormSubmit = (e) => {
+    e.preventDefault();
+    if (!partnerForm.logo) {
+      alert('Por favor carregue uma foto ou insira um link para o logótipo do parceiro.');
+      return;
+    }
+    const payload = { name: partnerForm.name, logo: partnerForm.logo };
+    if (editingPartner) {
+      updatePartner(editingPartner.id, payload);
+      showToast(`Parceiro "${partnerForm.name}" atualizado!`);
+    } else {
+      addPartner(payload);
+      showToast(`Parceiro "${partnerForm.name}" adicionado!`);
+    }
+    setIsPartnerModalOpen(false);
+  };
+
+  // Freight Route Add / Edit Modal state
+  const [isFreightModalOpen, setIsFreightModalOpen] = useState(false);
+  const [editingFreight, setEditingFreight] = useState(null);
+  const [freightForm, setFreightForm] = useState({
+    origin: 'Luanda',
+    destination: '',
+    pricePerKm: 900,
+    baseFee: 150000,
+    currency: 'AOA',
+    distanceKm: 500
+  });
+
+  const openAddFreightModal = () => {
+    setEditingFreight(null);
+    setFreightForm({
+      origin: 'Luanda',
+      destination: '',
+      pricePerKm: 900,
+      baseFee: 150000,
+      currency: 'AOA',
+      distanceKm: 500
+    });
+    setIsFreightModalOpen(true);
+  };
+
+  const openEditFreightModal = (route) => {
+    setEditingFreight(route);
+    setFreightForm({
+      origin: route.origin || 'Luanda',
+      destination: route.destination || '',
+      pricePerKm: route.pricePerKm || 0,
+      baseFee: route.baseFee || 0,
+      currency: route.currency || 'AOA',
+      distanceKm: route.distanceKm || 0
+    });
+    setIsFreightModalOpen(true);
+  };
+
+  const handleFreightFormSubmit = (e) => {
+    e.preventDefault();
+    const payload = {
+      origin: freightForm.origin,
+      destination: freightForm.destination,
+      pricePerKm: Number(freightForm.pricePerKm),
+      baseFee: Number(freightForm.baseFee),
+      currency: freightForm.currency,
+      distanceKm: Number(freightForm.distanceKm)
+    };
+
+    if (editingFreight) {
+      updateFreightRate(editingFreight.id, payload);
+      showToast(`Rota ${freightForm.origin} → ${freightForm.destination} atualizada com sucesso!`);
+    } else {
+      addFreightRate(payload);
+      showToast(`Nova rota ${freightForm.origin} → ${freightForm.destination} adicionada ao simulador!`);
+    }
+    setIsFreightModalOpen(false);
+  };
+
   // Fleet Vehicle Add / Edit Modal state
   const [isVehicleModalOpen, setIsVehicleModalOpen] = useState(false);
   const [editingVehicle, setEditingVehicle] = useState(null);
@@ -127,10 +299,6 @@ const AdminPortal = () => {
     image: '',
     badge: 'Frota BJA',
     capacidade: '',
-    motor: '',
-    tracao: '',
-    idealPara: '',
-    estado: 'Operacional',
     autoMessage: ''
   });
 
@@ -143,10 +311,6 @@ const AdminPortal = () => {
       image: '/volvo.jpeg',
       badge: 'Frota BJA',
       capacidade: '30 Toneladas',
-      motor: '420 CV',
-      tracao: '6x4',
-      idealPara: 'Transporte de Carga Geral',
-      estado: 'Operacional',
       autoMessage: ''
     });
     setIsVehicleModalOpen(true);
@@ -161,10 +325,6 @@ const AdminPortal = () => {
       image: vehicle.image || '',
       badge: vehicle.badge || 'Frota BJA',
       capacidade: vehicle.specs?.['Capacidade'] || vehicle.specs?.['Capacidade de Elevação'] || '',
-      motor: vehicle.specs?.['Motor'] || vehicle.specs?.['Combustível'] || '',
-      tracao: vehicle.specs?.['Tração'] || vehicle.specs?.['Compatibilidade'] || '',
-      idealPara: vehicle.specs?.['Ideal Para'] || vehicle.specs?.['Operação'] || '',
-      estado: vehicle.specs?.['Estado'] || 'Operacional',
       autoMessage: vehicle.autoMessage || ''
     });
     setIsVehicleModalOpen(true);
@@ -173,11 +333,7 @@ const AdminPortal = () => {
   const handleVehicleFormSubmit = (e) => {
     e.preventDefault();
     const specsObj = {
-      'Capacidade': vehicleForm.capacidade || 'Sob Consulta',
-      'Motor / Potência': vehicleForm.motor || 'Padrão BJA',
-      'Configuração': vehicleForm.tracao || 'Padrão',
-      'Ideal Para': vehicleForm.idealPara || 'Logística e Transporte',
-      'Estado': vehicleForm.estado || 'Operacional'
+      'Capacidade': vehicleForm.capacidade || 'Sob Consulta'
     };
 
     const vehiclePayload = {
@@ -309,6 +465,24 @@ const AdminPortal = () => {
     reader.readAsDataURL(file);
   };
 
+  // Partner Logo Upload Handler using FileReader
+  const handlePartnerFileUpload = (partnerId, e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+      alert('Por favor selecione um ficheiro de imagem válido.');
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      updatePartner(partnerId, { logo: event.target.result });
+      showToast('Logótipo do parceiro atualizado com sucesso.');
+    };
+    reader.readAsDataURL(file);
+  };
+
   // Security Form (Change Password)
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -420,9 +594,6 @@ const AdminPortal = () => {
         </div>
 
         <div className="admin-topbar-actions">
-          <a href="#/" className="btn-admin-link" title="Ver website público">
-            Ver Website Público <span>&nearr;</span>
-          </a>
           <button onClick={handleLogout} className="btn-admin-logout" title="Terminar sessão">
             Terminar Sessão
           </button>
@@ -451,11 +622,42 @@ const AdminPortal = () => {
             </button>
 
             <button
-              className={`admin-nav-btn ${activeTab === 'automessages' ? 'active' : ''}`}
-              onClick={() => setActiveTab('automessages')}
+              className={`admin-nav-btn ${activeTab === 'carousel' ? 'active' : ''}`}
+              onClick={() => setActiveTab('carousel')}
             >
-              <span className="admin-nav-icon"><IconMessageSquare /></span>
-              <span className="admin-nav-label">Mensagens Automáticas</span>
+              <span className="admin-nav-icon"><IconLayers /></span>
+              <span className="admin-nav-label">Carrosel do Hero</span>
+            </button>
+
+            <button
+              className={`admin-nav-btn ${activeTab === 'services' ? 'active' : ''}`}
+              onClick={() => setActiveTab('services')}
+            >
+              <span className="admin-nav-icon"><IconBriefcase /></span>
+              <span className="admin-nav-label">Gestão de Serviços</span>
+            </button>
+
+            <button
+              className={`admin-nav-btn ${activeTab === 'partners' ? 'active' : ''}`}
+              onClick={() => setActiveTab('partners')}
+            >
+              <span className="admin-nav-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                  <circle cx="9" cy="7" r="4" />
+                  <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+                  <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                </svg>
+              </span>
+              <span className="admin-nav-label">Parceiros</span>
+            </button>
+
+            <button
+              className={`admin-nav-btn ${activeTab === 'freight' ? 'active' : ''}`}
+              onClick={() => setActiveTab('freight')}
+            >
+              <span className="admin-nav-icon"><IconTruck /></span>
+              <span className="admin-nav-label">Simulador de Frete (Valores)</span>
             </button>
 
             <button
@@ -722,51 +924,85 @@ const AdminPortal = () => {
             </div>
           )}
 
-
-
-          {/* TAB 3: AUTOMATIC FLEET MESSAGES */}
-          {activeTab === 'automessages' && (
+          {/* TAB: CARROSEL DO HERO */}
+          {activeTab === 'carousel' && (
             <div className="admin-tab-content">
-              <div className="admin-page-header">
+              <div className="admin-page-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px' }}>
                 <div>
-                  <h2>Mensagens Automáticas de Equipamento</h2>
-                  <p>
-                    Personalize o texto que é automaticamente inserido no formulário de cotação quando o cliente clica em <strong>"Solicitar este Equipamento"</strong> na página da Frota.
-                  </p>
+                  <h2>Imagens do Carrosel do Hero</h2>
+                  <p>Adicione, remova ou altere as imagens de fundo que rolam automaticamente na secção inicial do site.</p>
                 </div>
+                <button onClick={() => setIsHeroModalOpen(true)} className="btn btn-primary" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
+                  <IconPlus /> Adicionar Imagem ao Carrosel
+                </button>
               </div>
 
-              <div className="admin-automessages-list">
-                {fleetData.map((vehicle) => (
-                  <div key={vehicle.id} className="admin-automessage-card">
-                    <div className="admin-automessage-header">
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                        <img
-                          src={vehicle.image}
-                          alt=""
-                          style={{ width: '50px', height: '40px', objectFit: 'cover', borderRadius: '4px' }}
-                        />
-                        <div>
-                          <h4>{vehicle.name}</h4>
-                          <small style={{ color: '#64748B' }}>{vehicle.type}</small>
-                        </div>
-                      </div>
+              <div className="admin-images-grid">
+                {heroSlides.map((slide, idx) => (
+                  <div key={slide.id || idx} className="admin-image-card">
+                    <div className="admin-image-preview-box" style={{ height: '180px' }}>
+                      <img src={slide.url} alt={slide.label || 'Slide Hero'} />
+                      <span className="admin-image-badge">Slide #{idx + 1}</span>
                     </div>
 
-                    <div className="admin-automessage-body">
-                      <label style={{ fontSize: '13px', fontWeight: '700', color: '#001C46', display: 'block', marginBottom: '6px' }}>
-                        Texto Pré-definido da Cotação:
-                      </label>
-                      <textarea
-                        rows="3"
-                        defaultValue={vehicle.autoMessage}
-                        onBlur={(e) => {
-                          updateVehicleAutoMessage(vehicle.id, e.target.value);
-                          showToast(`Mensagem automática atualizada para ${vehicle.name}.`);
-                        }}
-                        className="admin-textarea"
-                        placeholder="Escreva a mensagem pré-formatada que o cliente verá no formulário..."
-                      />
+                    <div className="admin-image-card-body">
+                      <h4>{slide.label || `Slide #${idx + 1}`}</h4>
+                      
+                      <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginBottom: '16px', marginTop: '12px' }}>
+                        <label className="btn-table-action" style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', cursor: 'pointer', background: '#F1F5F9', border: '1px solid #CBD5E1', padding: '6px 12px', borderRadius: '4px', fontSize: '12px', color: '#0F172A' }}>
+                          <IconUpload /> Alterar Fotografia
+                          <input
+                            type="file"
+                            accept="image/*"
+                            onChange={(e) => handleHeroFileUpload(slide.id, e)}
+                            style={{ display: 'none' }}
+                          />
+                        </label>
+
+                        {heroSlides.length > 1 && (
+                          <button
+                            onClick={() => {
+                              if (window.confirm('Tem a certeza que deseja eliminar esta imagem do carrosel?')) {
+                                deleteHeroSlide(slide.id);
+                                showToast('Imagem eliminada do carrosel.');
+                              }
+                            }}
+                            className="btn-table-action delete"
+                            title="Eliminar Slide do Carrosel"
+                            style={{ display: 'inline-flex', alignItems: 'center' }}
+                          >
+                            <IconTrash /> Eliminar Slide
+                          </button>
+                        )}
+                      </div>
+
+                      <div>
+                        <small style={{ color: '#64748B', display: 'block', marginBottom: '4px' }}>Legenda do Slide:</small>
+                        <input
+                          type="text"
+                          defaultValue={slide.label}
+                          onBlur={(e) => {
+                            updateHeroSlide(slide.id, { label: e.target.value });
+                            showToast('Legenda do slide atualizada.');
+                          }}
+                          className="admin-input-sm"
+                          style={{ marginBottom: '8px' }}
+                        />
+
+                        <small style={{ color: '#64748B', display: 'block', marginBottom: '4px' }}>URL da Imagem:</small>
+                        <input
+                          type="text"
+                          defaultValue={slide.url.startsWith('data:') ? '' : slide.url}
+                          onBlur={(e) => {
+                            if (e.target.value.trim()) {
+                              updateHeroSlide(slide.id, { url: e.target.value.trim() });
+                              showToast('URL da imagem do carrosel atualizado.');
+                            }
+                          }}
+                          className="admin-input-sm"
+                          placeholder="https://exemplo.com/foto.jpg"
+                        />
+                      </div>
                     </div>
                   </div>
                 ))}
@@ -774,7 +1010,257 @@ const AdminPortal = () => {
             </div>
           )}
 
-          {/* TAB 4: FOOTER & CONTACT DATA */}
+          {/* TAB: SIMULADOR DE FRETE (VALORES) */}
+          {activeTab === 'freight' && (
+            <div className="admin-tab-content">
+              <div className="admin-page-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px' }}>
+                <div>
+                  <h2>Simulador de Frete (Gestão de Tarifas e Rotas)</h2>
+                  <p>Defina as rotas, taxas base e valor por quilómetro utilizados para calcular as estimativas de frete no site público.</p>
+                </div>
+                <button onClick={openAddFreightModal} className="btn btn-primary" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
+                  <IconPlus /> Adicionar Nova Rota
+                </button>
+              </div>
+
+              <div className="admin-table-wrapper">
+                {freightRates.length === 0 ? (
+                  <div className="admin-empty-state">
+                    <h3>Nenhuma rota configurada</h3>
+                    <p>Clique em "Adicionar Nova Rota" para definir tarifários de simulação de frete.</p>
+                  </div>
+                ) : (
+                  <table className="admin-table">
+                    <thead>
+                      <tr>
+                        <th>Origem → Destino</th>
+                        <th>Distância (km)</th>
+                        <th>Taxa Base</th>
+                        <th>Preço / km</th>
+                        <th>Estimativa Total</th>
+                        <th>Ações</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {freightRates.map((route) => {
+                        const total = route.baseFee + (route.pricePerKm * route.distanceKm);
+                        return (
+                          <tr key={route.id}>
+                            <td>
+                              <strong style={{ color: '#0284C7' }}>{route.origin} → {route.destination}</strong>
+                            </td>
+                            <td>{route.distanceKm} km</td>
+                            <td>{route.baseFee.toLocaleString('pt-AO')} AOA</td>
+                            <td>{route.pricePerKm.toLocaleString('pt-AO')} AOA/km</td>
+                            <td>
+                              <strong style={{ color: '#D31211', fontSize: '15px' }}>
+                                {total.toLocaleString('pt-AO')} AOA
+                              </strong>
+                            </td>
+                            <td>
+                              <div className="admin-table-actions">
+                                <button
+                                  onClick={() => openEditFreightModal(route)}
+                                  className="btn-table-action view"
+                                  style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}
+                                >
+                                  <IconEdit /> Editar
+                                </button>
+                                <button
+                                  onClick={() => {
+                                    if (window.confirm(`Eliminar rota ${route.origin} → ${route.destination}?`)) {
+                                      deleteFreightRate(route.id);
+                                      showToast('Rota eliminada.');
+                                    }
+                                  }}
+                                  className="btn-table-action delete"
+                                >
+                                  <IconTrash />
+                                </button>
+                              </div>
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* TAB: GESTÃO DE SERVIÇOS */}
+          {activeTab === 'services' && (
+            <div className="admin-tab-content">
+              <div className="admin-page-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px' }}>
+                <div>
+                  <h2>Gestão de Serviços Técnicos</h2>
+                  <p>Adicione, edite e remova os serviços oferecidos. As alterações são refletidas automaticamente no formulário de cotação/contacto do site.</p>
+                </div>
+                <button onClick={openAddServiceModal} className="btn btn-primary" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
+                  <IconPlus /> Adicionar Novo Serviço
+                </button>
+              </div>
+
+              <div className="admin-table-wrapper">
+                {servicesData.length === 0 ? (
+                  <div className="admin-empty-state">
+                    <h3>Nenhum serviço registado</h3>
+                    <p>Clique em "Adicionar Novo Serviço" para registar opções no formulário do site.</p>
+                  </div>
+                ) : (
+                  <table className="admin-table">
+                    <thead>
+                      <tr>
+                        <th>Nome do Serviço</th>
+                        <th>Descrição Técnica / Resumo</th>
+                        <th>Ações</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {servicesData.map((service) => (
+                        <tr key={service.id}>
+                          <td>
+                            <strong style={{ color: '#0284C7', fontSize: '15px' }}>{service.name}</strong>
+                          </td>
+                          <td>
+                            <p style={{ fontSize: '13px', color: '#475569', margin: 0 }}>
+                              {service.description}
+                            </p>
+                          </td>
+                          <td>
+                            <div className="admin-table-actions">
+                              <button
+                                onClick={() => openEditServiceModal(service)}
+                                className="btn-table-action view"
+                                style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}
+                              >
+                                <IconEdit /> Editar
+                              </button>
+                              <button
+                                onClick={() => {
+                                  if (window.confirm(`Tem a certeza que deseja eliminar o serviço "${service.name}"?`)) {
+                                    deleteService(service.id);
+                                    showToast(`Serviço "${service.name}" eliminado.`);
+                                  }
+                                }}
+                                className="btn-table-action delete"
+                              >
+                                <IconTrash />
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* TAB: PARCEIROS */}
+          {activeTab === 'partners' && (
+            <div className="admin-tab-content">
+              <div className="admin-page-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px' }}>
+                <div>
+                  <h2>Gestão de Parceiros</h2>
+                  <p>Adicione, edite e remova os logótipos dos parceiros. Eles aparecem automaticamente na página inicial, por baixo da secção "Nossa Frota".</p>
+                </div>
+                <button onClick={openAddPartnerModal} className="btn btn-primary" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
+                  <IconPlus /> Adicionar Parceiro
+                </button>
+              </div>
+
+              <div className="admin-table-wrapper">
+                {partnersData.length === 0 ? (
+                  <div className="admin-empty-state">
+                    <h3>Nenhum parceiro registado</h3>
+                    <p>Clique em "Adicionar Parceiro" para incluir logótipos de parceiros na página inicial.</p>
+                  </div>
+                ) : (
+                  <table className="admin-table">
+                    <thead>
+                      <tr>
+                        <th>Logótipo</th>
+                        <th>Nome do Parceiro</th>
+                        <th>URL da Imagem</th>
+                        <th>Ações</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {partnersData.map((partner) => (
+                        <tr key={partner.id}>
+                          <td>
+                            {partner.logo ? (
+                              <img
+                                src={partner.logo}
+                                alt={partner.name}
+                                style={{ height: '40px', maxWidth: '100px', objectFit: 'contain', borderRadius: '4px', background: '#F1F5F9', padding: '4px' }}
+                              />
+                            ) : (
+                              <span style={{ fontSize: '12px', color: '#94A3B8' }}>Sem imagem</span>
+                            )}
+                          </td>
+                          <td>
+                            <strong style={{ color: '#001C46', fontSize: '14px' }}>{partner.name}</strong>
+                          </td>
+                          <td>
+                            {partner.logo ? (
+                              partner.logo.startsWith('data:') ? (
+                                <span className="admin-status-badge complete" style={{ fontSize: '11px', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                                  ✓ Ficheiro Carregado
+                                </span>
+                              ) : (
+                                <span style={{ fontSize: '12px', color: '#64748B', wordBreak: 'break-all' }}>
+                                  {partner.logo}
+                                </span>
+                              )
+                            ) : (
+                              <span style={{ fontSize: '12px', color: '#94A3B8' }}>—</span>
+                            )}
+                          </td>
+                          <td>
+                            <div className="admin-table-actions">
+                              <label className="btn-table-action upload" style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', cursor: 'pointer' }} title="Substituir foto/logótipo do parceiro">
+                                <IconUpload /> Foto
+                                <input
+                                  type="file"
+                                  accept="image/*"
+                                  onChange={(e) => handlePartnerFileUpload(partner.id, e)}
+                                  style={{ display: 'none' }}
+                                />
+                              </label>
+                              <button
+                                onClick={() => openEditPartnerModal(partner)}
+                                className="btn-table-action view"
+                                style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}
+                              >
+                                <IconEdit /> Editar
+                              </button>
+                              <button
+                                onClick={() => {
+                                  if (window.confirm(`Eliminar parceiro "${partner.name}"?`)) {
+                                    deletePartner(partner.id);
+                                    showToast(`Parceiro "${partner.name}" eliminado.`);
+                                  }
+                                }}
+                                className="btn-table-action delete"
+                              >
+                                <IconTrash />
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* TAB: FOOTER & CONTACT DATA */}
           {activeTab === 'footer' && (
             <div className="admin-tab-content">
               <div className="admin-page-header">
@@ -1143,49 +1629,13 @@ const AdminPortal = () => {
                   />
                 </div>
 
-                <div>
+                <div style={{ gridColumn: 'span 2' }}>
                   <label className="admin-label" style={{ display: 'block', fontSize: '12px', fontWeight: '700', color: '#001C46', marginBottom: '6px' }}>Capacidade de Carga</label>
                   <input
                     type="text"
                     placeholder="Ex: 40 Toneladas"
                     value={vehicleForm.capacidade}
                     onChange={(e) => setVehicleForm({ ...vehicleForm, capacidade: e.target.value })}
-                    className="admin-input-sm"
-                    style={{ width: '100%', padding: '10px 14px' }}
-                  />
-                </div>
-
-                <div>
-                  <label className="admin-label" style={{ display: 'block', fontSize: '12px', fontWeight: '700', color: '#001C46', marginBottom: '6px' }}>Motor / Potência</label>
-                  <input
-                    type="text"
-                    placeholder="Ex: 420 CV / V8"
-                    value={vehicleForm.motor}
-                    onChange={(e) => setVehicleForm({ ...vehicleForm, motor: e.target.value })}
-                    className="admin-input-sm"
-                    style={{ width: '100%', padding: '10px 14px' }}
-                  />
-                </div>
-
-                <div>
-                  <label className="admin-label" style={{ display: 'block', fontSize: '12px', fontWeight: '700', color: '#001C46', marginBottom: '6px' }}>Configuração / Tração</label>
-                  <input
-                    type="text"
-                    placeholder="Ex: 6x4 ou 20/40 Pés"
-                    value={vehicleForm.tracao}
-                    onChange={(e) => setVehicleForm({ ...vehicleForm, tracao: e.target.value })}
-                    className="admin-input-sm"
-                    style={{ width: '100%', padding: '10px 14px' }}
-                  />
-                </div>
-
-                <div>
-                  <label className="admin-label" style={{ display: 'block', fontSize: '12px', fontWeight: '700', color: '#001C46', marginBottom: '6px' }}>Ideal Para</label>
-                  <input
-                    type="text"
-                    placeholder="Ex: Contentores e Granéis"
-                    value={vehicleForm.idealPara}
-                    onChange={(e) => setVehicleForm({ ...vehicleForm, idealPara: e.target.value })}
                     className="admin-input-sm"
                     style={{ width: '100%', padding: '10px 14px' }}
                   />
@@ -1247,7 +1697,378 @@ const AdminPortal = () => {
           </div>
         </div>
       )}
+      {/* Hero Slide Add Modal */}
+      {isHeroModalOpen && (
+        <div className="lightbox" onClick={() => setIsHeroModalOpen(false)}>
+          <div className="lightbox-content admin-vehicle-modal" onClick={(e) => e.stopPropagation()} style={{ display: 'block', padding: '32px', maxWidth: '600px', width: '90%' }}>
+            <button className="lightbox-close" onClick={() => setIsHeroModalOpen(false)}>
+              &times;
+            </button>
 
+            <span className="eyebrow dark"><i></i> CARROSEL DO HERO</span>
+            <h2 style={{ fontSize: '24px', color: '#001C46', marginBottom: '20px' }}>
+              Adicionar Imagem ao Carrosel
+            </h2>
+
+            <form onSubmit={handleHeroFormSubmit}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', marginBottom: '20px' }}>
+                <div>
+                  <label className="admin-label" style={{ display: 'block', fontSize: '12px', fontWeight: '700', color: '#001C46', marginBottom: '6px' }}>
+                    Legenda da Imagem / Descrição Operacional
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="Ex: Operação Portuária no Porto do Lobito"
+                    value={heroForm.label}
+                    onChange={(e) => setHeroForm({ ...heroForm, label: e.target.value })}
+                    className="admin-input-sm"
+                    style={{ width: '100%', padding: '10px 14px' }}
+                  />
+                </div>
+
+                <div>
+                  <label className="admin-label" style={{ display: 'block', fontSize: '12px', fontWeight: '700', color: '#001C46', marginBottom: '6px' }}>
+                    URL da Imagem ou Carregar Ficheiro
+                  </label>
+                  <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                    <input
+                      type="text"
+                      placeholder="https://exemplo.com/foto.jpg"
+                      value={heroForm.url}
+                      onChange={(e) => setHeroForm({ ...heroForm, url: e.target.value })}
+                      className="admin-input-sm"
+                      style={{ flex: 1, padding: '10px 14px' }}
+                    />
+                    <label className="btn btn-secondary" style={{ whiteSpace: 'nowrap', cursor: 'pointer', fontSize: '13px', padding: '10px 16px', display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+                      <IconUpload /> Ficheiro
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={(e) => {
+                          const file = e.target.files[0];
+                          if (file) {
+                            const reader = new FileReader();
+                            reader.onloadend = () => {
+                              setHeroForm(prev => ({ ...prev, url: reader.result }));
+                            };
+                            reader.readAsDataURL(file);
+                          }
+                        }}
+                        style={{ display: 'none' }}
+                      />
+                    </label>
+                  </div>
+                </div>
+              </div>
+
+              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px', paddingTop: '16px', borderTop: '1px solid #E2E8F0' }}>
+                <button type="button" className="btn btn-outline" onClick={() => setIsHeroModalOpen(false)}>
+                  Cancelar
+                </button>
+                <button type="submit" className="btn btn-primary">
+                  Adicionar ao Carrosel
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Freight Rate Add / Edit Modal */}
+      {isFreightModalOpen && (
+        <div className="lightbox" onClick={() => setIsFreightModalOpen(false)}>
+          <div className="lightbox-content admin-vehicle-modal" onClick={(e) => e.stopPropagation()} style={{ display: 'block', padding: '32px', maxWidth: '600px', width: '90%' }}>
+            <button className="lightbox-close" onClick={() => setIsFreightModalOpen(false)}>
+              &times;
+            </button>
+
+            <span className="eyebrow dark"><i></i> SIMULADOR DE FRETE</span>
+            <h2 style={{ fontSize: '24px', color: '#001C46', marginBottom: '20px' }}>
+              {editingFreight ? `Editar Rota: ${editingFreight.origin} → ${editingFreight.destination}` : 'Adicionar Nova Rota ao Simulador'}
+            </h2>
+
+            <form onSubmit={handleFreightFormSubmit}>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '20px' }}>
+                <div>
+                  <label className="admin-label" style={{ display: 'block', fontSize: '12px', fontWeight: '700', color: '#001C46', marginBottom: '6px' }}>Ponto de Origem *</label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="Ex: Luanda"
+                    value={freightForm.origin}
+                    onChange={(e) => setFreightForm({ ...freightForm, origin: e.target.value })}
+                    className="admin-input-sm"
+                    style={{ width: '100%', padding: '10px 14px' }}
+                  />
+                </div>
+
+                <div>
+                  <label className="admin-label" style={{ display: 'block', fontSize: '12px', fontWeight: '700', color: '#001C46', marginBottom: '6px' }}>Ponto de Destino *</label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="Ex: Benguela, Huambo, etc."
+                    value={freightForm.destination}
+                    onChange={(e) => setFreightForm({ ...freightForm, destination: e.target.value })}
+                    className="admin-input-sm"
+                    style={{ width: '100%', padding: '10px 14px' }}
+                  />
+                </div>
+
+                <div>
+                  <label className="admin-label" style={{ display: 'block', fontSize: '12px', fontWeight: '700', color: '#001C46', marginBottom: '6px' }}>Distância Estimada (km) *</label>
+                  <input
+                    type="number"
+                    required
+                    min="1"
+                    placeholder="Ex: 500"
+                    value={freightForm.distanceKm}
+                    onChange={(e) => setFreightForm({ ...freightForm, distanceKm: e.target.value })}
+                    className="admin-input-sm"
+                    style={{ width: '100%', padding: '10px 14px' }}
+                  />
+                </div>
+
+                <div>
+                  <label className="admin-label" style={{ display: 'block', fontSize: '12px', fontWeight: '700', color: '#001C46', marginBottom: '6px' }}>Taxa Base / Fixa (AOA) *</label>
+                  <input
+                    type="number"
+                    required
+                    min="0"
+                    placeholder="Ex: 150000"
+                    value={freightForm.baseFee}
+                    onChange={(e) => setFreightForm({ ...freightForm, baseFee: e.target.value })}
+                    className="admin-input-sm"
+                    style={{ width: '100%', padding: '10px 14px' }}
+                  />
+                </div>
+
+                <div style={{ gridColumn: 'span 2' }}>
+                  <label className="admin-label" style={{ display: 'block', fontSize: '12px', fontWeight: '700', color: '#001C46', marginBottom: '6px' }}>Custo Variável por Quilómetro (AOA / km) *</label>
+                  <input
+                    type="number"
+                    required
+                    min="0"
+                    placeholder="Ex: 900"
+                    value={freightForm.pricePerKm}
+                    onChange={(e) => setFreightForm({ ...freightForm, pricePerKm: e.target.value })}
+                    className="admin-input-sm"
+                    style={{ width: '100%', padding: '10px 14px' }}
+                  />
+                </div>
+              </div>
+
+              <div style={{ padding: '14px', background: '#E4F1FD', borderRadius: '8px', border: '1px solid #93C5FD', marginBottom: '20px' }}>
+                <span style={{ fontSize: '12px', fontWeight: '700', color: '#0284C7' }}>PREVISÃO DE CÁLCULO:</span>
+                <div style={{ fontSize: '16px', fontWeight: '800', color: '#D31211', marginTop: '4px' }}>
+                  {(Number(freightForm.baseFee || 0) + Number(freightForm.pricePerKm || 0) * Number(freightForm.distanceKm || 0)).toLocaleString('pt-AO')} AOA
+                </div>
+              </div>
+
+              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px', paddingTop: '16px', borderTop: '1px solid #E2E8F0' }}>
+                <button type="button" className="btn btn-outline" onClick={() => setIsFreightModalOpen(false)}>
+                  Cancelar
+                </button>
+                <button type="submit" className="btn btn-primary">
+                  {editingFreight ? 'Guardar Alterações' : 'Adicionar Rota'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Service Add / Edit Modal */}
+      {isServiceModalOpen && (
+        <div className="lightbox" onClick={() => setIsServiceModalOpen(false)}>
+          <div className="lightbox-content admin-vehicle-modal" onClick={(e) => e.stopPropagation()} style={{ display: 'block', padding: '32px', maxWidth: '600px', width: '90%' }}>
+            <button className="lightbox-close" onClick={() => setIsServiceModalOpen(false)}>
+              &times;
+            </button>
+
+            <span className="eyebrow dark"><i></i> GESTÃO DE SERVIÇOS</span>
+            <h2 style={{ fontSize: '24px', color: '#001C46', marginBottom: '20px' }}>
+              {editingService ? `Editar Serviço: ${editingService.name}` : 'Adicionar Novo Serviço'}
+            </h2>
+
+            <form onSubmit={handleServiceFormSubmit}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', marginBottom: '20px' }}>
+                <div>
+                  <label className="admin-label" style={{ display: 'block', fontSize: '12px', fontWeight: '700', color: '#001C46', marginBottom: '6px' }}>Nome do Serviço *</label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="Ex: Transporte Rodoviário Especial"
+                    value={serviceForm.name}
+                    onChange={(e) => setServiceForm({ ...serviceForm, name: e.target.value })}
+                    className="admin-input-sm"
+                    style={{ width: '100%', padding: '10px 14px' }}
+                  />
+                </div>
+
+                <div>
+                  <label className="admin-label" style={{ display: 'block', fontSize: '12px', fontWeight: '700', color: '#001C46', marginBottom: '6px' }}>Descrição Técnica / Resumo do Serviço *</label>
+                  <textarea
+                    required
+                    rows="3"
+                    placeholder="Resumo do âmbito do serviço para apresentação no website..."
+                    value={serviceForm.description}
+                    onChange={(e) => setServiceForm({ ...serviceForm, description: e.target.value })}
+                    style={{ width: '100%', padding: '10px 14px', borderRadius: '6px', border: '1px solid #CBD5E1', fontSize: '14px' }}
+                  />
+                </div>
+              </div>
+
+              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px', paddingTop: '16px', borderTop: '1px solid #E2E8F0' }}>
+                <button type="button" className="btn btn-outline" onClick={() => setIsServiceModalOpen(false)}>
+                  Cancelar
+                </button>
+                <button type="submit" className="btn btn-primary">
+                  {editingService ? 'Guardar Alterações' : 'Adicionar Serviço'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+      {/* Partner Add / Edit Modal */}
+      {isPartnerModalOpen && (
+        <div className="lightbox" onClick={() => setIsPartnerModalOpen(false)}>
+          <div className="lightbox-content admin-vehicle-modal" onClick={(e) => e.stopPropagation()} style={{ display: 'block', padding: '32px', maxWidth: '560px', width: '90%' }}>
+            <button className="lightbox-close" onClick={() => setIsPartnerModalOpen(false)}>&times;</button>
+
+            <span className="eyebrow dark"><i></i> PARCEIROS</span>
+            <h2 style={{ fontSize: '22px', color: '#001C46', marginBottom: '20px' }}>
+              {editingPartner ? `Editar: ${editingPartner.name}` : 'Adicionar Novo Parceiro'}
+            </h2>
+
+            <form onSubmit={handlePartnerFormSubmit}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', marginBottom: '20px' }}>
+                <div>
+                  <label style={{ display: 'block', fontSize: '12px', fontWeight: '700', color: '#001C46', marginBottom: '6px' }}>Nome do Parceiro *</label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="Ex: Porto de Luanda"
+                    value={partnerForm.name}
+                    onChange={(e) => setPartnerForm({ ...partnerForm, name: e.target.value })}
+                    className="admin-input-sm"
+                    style={{ width: '100%', padding: '10px 14px' }}
+                  />
+                </div>
+
+                <div>
+                  <label style={{ display: 'block', fontSize: '12px', fontWeight: '700', color: '#001C46', marginBottom: '6px' }}>
+                    Logótipo do Parceiro (Upload ou URL) *
+                  </label>
+
+                  {partnerForm.logo && partnerForm.logo.startsWith('data:') ? (
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 16px', background: '#EFF6FF', border: '1px solid #BFDBFE', borderRadius: '6px', marginBottom: '8px' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <span style={{ color: '#0284C7', fontWeight: '800', fontSize: '14px' }}>✓</span>
+                        <span style={{ fontSize: '13px', color: '#1E40AF', fontWeight: '600' }}>Ficheiro carregado com sucesso</span>
+                      </div>
+                      <div style={{ display: 'flex', gap: '8px' }}>
+                        <label className="btn btn-secondary" style={{ cursor: 'pointer', fontSize: '12px', padding: '6px 12px', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                          <IconUpload /> Substituir Foto
+                          <input
+                            type="file"
+                            accept="image/*"
+                            onChange={(e) => {
+                              const file = e.target.files[0];
+                              if (file) {
+                                if (!file.type.startsWith('image/')) {
+                                  alert('Por favor selecione um ficheiro de imagem válido.');
+                                  return;
+                                }
+                                const reader = new FileReader();
+                                reader.onload = () => {
+                                  setPartnerForm(prev => ({ ...prev, logo: reader.result }));
+                                };
+                                reader.readAsDataURL(file);
+                              }
+                            }}
+                            style={{ display: 'none' }}
+                          />
+                        </label>
+                      </div>
+                    </div>
+                  ) : (
+                    <div style={{ display: 'flex', gap: '8px', marginBottom: '8px' }}>
+                      <input
+                        type="text"
+                        placeholder="Cole um link de imagem ou faça upload..."
+                        value={partnerForm.logo}
+                        onChange={(e) => setPartnerForm({ ...partnerForm, logo: e.target.value })}
+                        className="admin-input-sm"
+                        style={{ flex: 1, padding: '10px 14px' }}
+                      />
+                      <label className="btn btn-secondary" style={{ whiteSpace: 'nowrap', cursor: 'pointer', fontSize: '13px', padding: '10px 16px', display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+                        <IconUpload /> Upload de Foto
+                        <input
+                          type="file"
+                          accept="image/*"
+                          onChange={(e) => {
+                            const file = e.target.files[0];
+                            if (file) {
+                              if (!file.type.startsWith('image/')) {
+                                alert('Por favor selecione um ficheiro de imagem válido.');
+                                return;
+                              }
+                              const reader = new FileReader();
+                              reader.onload = () => {
+                                setPartnerForm(prev => ({ ...prev, logo: reader.result }));
+                              };
+                              reader.readAsDataURL(file);
+                            }
+                          }}
+                          style={{ display: 'none' }}
+                        />
+                      </label>
+                    </div>
+                  )}
+
+                  <small style={{ fontSize: '11px', color: '#64748B' }}>
+                    Suporta imagens PNG, JPG, SVG ou WEBP através de upload directo ou endereço web.
+                  </small>
+                </div>
+
+                {partnerForm.logo && (
+                  <div style={{ padding: '16px', background: '#F8FAFC', borderRadius: '8px', border: '1px solid #E2E8F0', textAlign: 'center', position: 'relative' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
+                      <p style={{ fontSize: '11px', fontWeight: '700', color: '#0284C7', textTransform: 'uppercase', letterSpacing: '0.06em', margin: 0 }}>
+                        Pré-visualização do Logótipo
+                      </p>
+                      <button
+                        type="button"
+                        onClick={() => setPartnerForm({ ...partnerForm, logo: '' })}
+                        style={{ background: 'none', border: 'none', color: '#D31211', fontSize: '11px', fontWeight: '700', cursor: 'pointer' }}
+                      >
+                        Remover Foto
+                      </button>
+                    </div>
+                    <div style={{ background: '#FFFFFF', padding: '12px', borderRadius: '6px', border: '1px dashed #CBD5E1', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>
+                      <img
+                        src={partnerForm.logo}
+                        alt={partnerForm.name || 'Preview'}
+                        style={{ maxHeight: '60px', maxWidth: '200px', objectFit: 'contain' }}
+                        onError={(e) => { e.target.style.display = 'none'; }}
+                      />
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px', paddingTop: '16px', borderTop: '1px solid #E2E8F0' }}>
+                <button type="button" className="btn btn-outline" onClick={() => setIsPartnerModalOpen(false)}>Cancelar</button>
+                <button type="submit" className="btn btn-primary">
+                  {editingPartner ? 'Guardar Alterações' : 'Adicionar Parceiro'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
 
     </div>
   );

@@ -8,8 +8,24 @@ const STORAGE_KEYS = {
   MESSAGES: 'babissanga_messages_v2',
   AUTH: 'babissanga_auth_v2',
   ADMIN_CREDENTIALS: 'babissanga_admin_cred_v2',
-  HERO_SLIDES: 'babissanga_hero_slides_v2'
+  HERO_SLIDES: 'babissanga_hero_slides_v2',
+  FREIGHT_RATES: 'babissanga_freight_rates_v1',
+  SERVICES: 'babissanga_services_v1',
+  PARTNERS: 'babissanga_partners_v1'
 };
+
+const DEFAULT_PARTNERS = [
+  { id: 'part_1', name: 'Porto de Luanda', logo: '/NLogo.png' },
+  { id: 'part_2', name: 'Sonangol Logistics', logo: '/NLogo.png' },
+  { id: 'part_3', name: 'Terminal Multiusos', logo: '/NLogo.png' }
+];
+
+const DEFAULT_SERVICES = [
+  { id: 'srv_1', name: 'Transporte Rodoviário', description: 'Frotas dedicadas de camiões pesados e comerciais ligeiros. Gestão de cargas completas (FTL) e distribuição urbana regional ágil.' },
+  { id: 'srv_2', name: 'Logística Marítima', description: 'Gestão integrada de contentores, consolidação de carga, desalfandegamento expedito e coordenação portuária eficiente.' },
+  { id: 'srv_3', name: 'Carga Aérea', description: 'Segurança máxima e velocidade prioritária para cargas urgentes, documentos de alto valor e bens perecíveis.' },
+  { id: 'srv_4', name: 'Projectos Especiais', description: 'Planeamento técnico logístico complexo para cargas de dimensões fora do padrão, sector de energia e infraestruturas.' }
+];
 
 const DEFAULT_HERO_SLIDES = [
   { id: 'slide_1', url: '/bg1.jpg', label: 'Operação Portuária & Carga Pesada' },
@@ -159,6 +175,17 @@ const INITIAL_SAMPLE_MESSAGES = [
   }
 ];
 
+const DEFAULT_FREIGHT_RATES = [
+  { id: 'route_1', origin: 'Luanda', destination: 'Benguela', pricePerKm: 850, baseFee: 120000, currency: 'AOA', distanceKm: 692 },
+  { id: 'route_2', origin: 'Luanda', destination: 'Huambo', pricePerKm: 900, baseFee: 150000, currency: 'AOA', distanceKm: 600 },
+  { id: 'route_3', origin: 'Luanda', destination: 'Lobito', pricePerKm: 850, baseFee: 130000, currency: 'AOA', distanceKm: 720 },
+  { id: 'route_4', origin: 'Luanda', destination: 'Cabinda', pricePerKm: 1100, baseFee: 180000, currency: 'AOA', distanceKm: 480 },
+  { id: 'route_5', origin: 'Luanda', destination: 'Malanje', pricePerKm: 800, baseFee: 100000, currency: 'AOA', distanceKm: 420 },
+  { id: 'route_6', origin: 'Luanda', destination: 'Soyo', pricePerKm: 1000, baseFee: 160000, currency: 'AOA', distanceKm: 450 },
+  { id: 'route_7', origin: 'Luanda', destination: 'Namibe', pricePerKm: 950, baseFee: 170000, currency: 'AOA', distanceKm: 960 },
+  { id: 'route_8', origin: 'Luanda', destination: 'Lubango', pricePerKm: 900, baseFee: 160000, currency: 'AOA', distanceKm: 1005 }
+];
+
 export const SiteDataProvider = ({ children }) => {
   // Footer Data
   const [footerData, setFooterData] = useState(() => {
@@ -180,7 +207,7 @@ export const SiteDataProvider = ({ children }) => {
         return parsed.map((item, idx) => ({
           ...DEFAULT_FLEET[idx],
           ...item,
-          image: item.image || DEFAULT_FLEET[idx]?.image || '/logo.jpeg'
+          image: item.image || DEFAULT_FLEET[idx]?.image || '/NLogo.png'
         }));
       }
       return DEFAULT_FLEET;
@@ -206,6 +233,36 @@ export const SiteDataProvider = ({ children }) => {
       return saved ? JSON.parse(saved) : DEFAULT_HERO_SLIDES;
     } catch {
       return DEFAULT_HERO_SLIDES;
+    }
+  });
+
+  // Freight Rates (admin-defined)
+  const [freightRates, setFreightRates] = useState(() => {
+    try {
+      const saved = localStorage.getItem(STORAGE_KEYS.FREIGHT_RATES);
+      return saved ? JSON.parse(saved) : DEFAULT_FREIGHT_RATES;
+    } catch {
+      return DEFAULT_FREIGHT_RATES;
+    }
+  });
+
+  // Services Data (admin-defined)
+  const [servicesData, setServicesData] = useState(() => {
+    try {
+      const saved = localStorage.getItem(STORAGE_KEYS.SERVICES);
+      return saved ? JSON.parse(saved) : DEFAULT_SERVICES;
+    } catch {
+      return DEFAULT_SERVICES;
+    }
+  });
+
+  // Partners Data (admin-defined)
+  const [partnersData, setPartnersData] = useState(() => {
+    try {
+      const saved = localStorage.getItem(STORAGE_KEYS.PARTNERS);
+      return saved ? JSON.parse(saved) : DEFAULT_PARTNERS;
+    } catch {
+      return DEFAULT_PARTNERS;
     }
   });
 
@@ -241,6 +298,30 @@ export const SiteDataProvider = ({ children }) => {
       console.error('Error saving hero slides', e);
     }
   }, [heroSlides]);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(STORAGE_KEYS.FREIGHT_RATES, JSON.stringify(freightRates));
+    } catch (e) {
+      console.error('Error saving freight rates', e);
+    }
+  }, [freightRates]);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(STORAGE_KEYS.SERVICES, JSON.stringify(servicesData));
+    } catch (e) {
+      console.error('Error saving services data', e);
+    }
+  }, [servicesData]);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(STORAGE_KEYS.PARTNERS, JSON.stringify(partnersData));
+    } catch (e) {
+      console.error('Error saving partners data', e);
+    }
+  }, [partnersData]);
 
   // Actions
   const addMessage = (msg) => {
@@ -320,13 +401,80 @@ export const SiteDataProvider = ({ children }) => {
     setHeroSlides(prev => prev.map(s => s.id === id ? { ...s, ...slideData } : s));
   };
 
+  // Freight Rate Actions
+  const addFreightRate = (rateData) => {
+    const newRate = {
+      id: 'route_' + Date.now(),
+      origin: rateData.origin || 'Luanda',
+      destination: rateData.destination || '',
+      pricePerKm: Number(rateData.pricePerKm) || 0,
+      baseFee: Number(rateData.baseFee) || 0,
+      currency: rateData.currency || 'AOA',
+      distanceKm: Number(rateData.distanceKm) || 0
+    };
+    setFreightRates(prev => [...prev, newRate]);
+    return newRate;
+  };
+
+  const updateFreightRate = (id, rateData) => {
+    setFreightRates(prev => prev.map(r => r.id === id ? { ...r, ...rateData } : r));
+  };
+
+  const deleteFreightRate = (id) => {
+    setFreightRates(prev => prev.filter(r => r.id !== id));
+  };
+
+  // Service Actions
+  const addService = (serviceData) => {
+    const newService = {
+      id: 'srv_' + Date.now(),
+      name: serviceData.name || 'Novo Serviço',
+      description: serviceData.description || 'Descrição do novo serviço.'
+    };
+    setServicesData(prev => [...prev, newService]);
+    return newService;
+  };
+
+  const updateService = (id, serviceData) => {
+    setServicesData(prev => prev.map(s => s.id === id ? { ...s, ...serviceData } : s));
+  };
+
+  const deleteService = (id) => {
+    setServicesData(prev => prev.filter(s => s.id !== id));
+  };
+
+  // Partner Actions
+  const addPartner = (partnerData) => {
+    const newPartner = {
+      id: 'part_' + Date.now(),
+      name: partnerData.name || 'Novo Parceiro',
+      logo: partnerData.logo || ''
+    };
+    setPartnersData(prev => [...prev, newPartner]);
+    return newPartner;
+  };
+
+  const updatePartner = (id, partnerData) => {
+    setPartnersData(prev => prev.map(p => p.id === id ? { ...p, ...partnerData } : p));
+  };
+
+  const deletePartner = (id) => {
+    setPartnersData(prev => prev.filter(p => p.id !== id));
+  };
+
   const resetAllToDefaults = () => {
     setFooterData(DEFAULT_FOOTER);
     setFleetData(DEFAULT_FLEET);
     setHeroSlides(DEFAULT_HERO_SLIDES);
+    setFreightRates(DEFAULT_FREIGHT_RATES);
+    setServicesData(DEFAULT_SERVICES);
+    setPartnersData(DEFAULT_PARTNERS);
     localStorage.removeItem(STORAGE_KEYS.FOOTER);
     localStorage.removeItem(STORAGE_KEYS.FLEET);
     localStorage.removeItem(STORAGE_KEYS.HERO_SLIDES);
+    localStorage.removeItem(STORAGE_KEYS.FREIGHT_RATES);
+    localStorage.removeItem(STORAGE_KEYS.SERVICES);
+    localStorage.removeItem(STORAGE_KEYS.PARTNERS);
   };
 
   return (
@@ -336,6 +484,9 @@ export const SiteDataProvider = ({ children }) => {
         fleetData,
         messages,
         heroSlides,
+        freightRates,
+        servicesData,
+        partnersData,
         addMessage,
         updateMessageStatus,
         deleteMessage,
@@ -348,6 +499,15 @@ export const SiteDataProvider = ({ children }) => {
         addHeroSlide,
         deleteHeroSlide,
         updateHeroSlide,
+        addFreightRate,
+        updateFreightRate,
+        deleteFreightRate,
+        addService,
+        updateService,
+        deleteService,
+        addPartner,
+        updatePartner,
+        deletePartner,
         resetAllToDefaults
       }}
     >

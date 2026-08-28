@@ -2,21 +2,27 @@
 @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&display=swap');
 
 :root {
-  --color-primary: #001C46;
-  --color-primary-hover: #002D70;
-  --color-primary-rgb: 0, 28, 70;
+  --color-primary: #0284C7;
+  --color-primary-hover: #0369A1;
+  --color-primary-rgb: 2, 132, 199;
   --color-secondary: #D31211;
   --color-secondary-hover: #B80F0E;
   --color-secondary-rgb: 211, 18, 17;
-  --color-bg-light: #F7F9FB;
-  --color-bg-white: #EFF2F6;
-  --color-bg-card: #FFFFFF;
-  --color-bg-dark: #00102B;
-  --color-bg-card-dark: #00173D;
-  --color-text-dark: #0F172A;
-  --color-text-muted: #526175;
+  
+  --color-brand-blue-light: #38BDF8;
+  --color-brand-blue-soft: #7DD3FC;
+  
+  --color-bg-light: #CDE2F7;
+  --color-bg-white: #D7E8F9;
+  --color-bg-card: #E4F1FD;
+  --color-bg-dark: #0B0F19;
+  --color-bg-card-dark: #121824;
+  
+  --color-text-dark: #0B1320;
+  --color-text-muted: #334155;
   --color-text-light: #F1F5F9;
-  --color-text-gray-light: #94A3B8;
+  --color-text-gray-light: #7DD3FC;
+  --color-border-slate: #93C5FD;
   
   --font-sans: 'Manrope', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   --font-mono: 'DM Mono', monospace;
@@ -25,11 +31,11 @@
   --transition-normal: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   --transition-slow: 0.5s cubic-bezier(0.4, 0, 0.2, 1);
   
-  --shadow-sm: 0 1px 3px rgba(0,0,0,0.05);
-  --shadow-md: 0 4px 20px -2px rgba(0, 28, 70, 0.08);
-  --shadow-lg: 0 10px 30px -5px rgba(0, 28, 70, 0.12);
+  --shadow-sm: 0 1px 3px rgba(2, 132, 199, 0.08);
+  --shadow-md: 0 4px 20px -2px rgba(2, 132, 199, 0.12);
+  --shadow-lg: 0 10px 30px -5px rgba(2, 132, 199, 0.16);
   --shadow-red: 0 4px 15px -3px rgba(211, 18, 17, 0.3);
-  --shadow-glass: 0 8px 32px 0 rgba(0, 28, 70, 0.06);
+  --shadow-glass: 0 8px 32px 0 rgba(2, 132, 199, 0.10);
 
   --border-radius-sm: 6px;
   --border-radius-md: 12px;
@@ -459,17 +465,80 @@ img {
   display: block;
 }
 
-/* Hero Section */
+/* Hero Section - Horizontal Sliding Background Carousel (No White Curtain Overlay) */
 .hero {
   position: relative;
   min-height: 100vh;
   display: flex;
   align-items: center;
-  background: linear-gradient(135deg, rgba(245, 247, 250, 0.70) 0%, rgba(250, 252, 254, 0.74) 100%),
-              url('/bg1.jpg') center center / cover no-repeat;
-  background-attachment: fixed;
   padding-top: 80px;
   overflow: hidden;
+  background-color: #000E26;
+}
+
+.hero-slider-track-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  z-index: 1;
+}
+
+.hero-slider-track {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  transition: transform 0.9s cubic-bezier(0.25, 1, 0.5, 1);
+  will-change: transform;
+}
+
+.hero-slider-slide {
+  min-width: 100%;
+  width: 100%;
+  height: 100%;
+  flex-shrink: 0;
+  background-size: cover;
+  background-position: center center;
+  background-repeat: no-repeat;
+}
+
+.hero-carousel-dots {
+  position: absolute;
+  bottom: 76px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  z-index: 10;
+  background: rgba(0, 28, 70, 0.45);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  padding: 8px 16px;
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.hero-dot {
+  width: 24px;
+  height: 6px;
+  border-radius: 3px;
+  background-color: rgba(255, 255, 255, 0.5);
+  border: none;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.hero-dot:hover {
+  background-color: #FFFFFF;
+}
+
+.hero-dot.active {
+  width: 44px;
+  background-color: var(--color-secondary);
+  box-shadow: 0 2px 8px rgba(211, 18, 17, 0.6);
 }
 
 .hero-grid {
@@ -533,7 +602,7 @@ img {
 }
 
 .hero-image-circulo {
-  max-width: 440px;
+  max-width: 176px;
   width: 100%;
   height: auto;
   object-fit: contain;
@@ -633,8 +702,7 @@ img {
 
 .page-about-bg {
   position: relative;
-  background: linear-gradient(135deg, rgba(245, 247, 250, 0.84) 0%, rgba(250, 252, 254, 0.88) 100%),
-              url('/bg2.jpg') center center / cover no-repeat;
+  background: url('/bg2.jpg') center center / cover no-repeat;
   background-attachment: fixed;
 }
 
@@ -648,13 +716,13 @@ img {
 }
 
 .value-card {
-  background: rgba(255, 255, 255, 0.94);
+  background: rgba(228, 241, 253, 0.96);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   padding: 40px 30px;
   border-radius: var(--border-radius-md);
   box-shadow: var(--shadow-md);
-  border: 1px solid rgba(0, 28, 70, 0.08);
+  border: 1px solid var(--color-border-slate);
   transition: all var(--transition-normal);
   position: relative;
   overflow: hidden;
@@ -727,8 +795,9 @@ img {
 }
 
 .value-pill {
-  background-color: #ECEFF4;
+  background-color: #DCEBF8;
   color: var(--color-primary);
+  border: 1px solid var(--color-border-slate);
   padding: 8px 20px;
   border-radius: var(--border-radius-xl);
   font-weight: 600;
@@ -806,8 +875,7 @@ img {
 
 .page-services-bg {
   position: relative;
-  background: linear-gradient(135deg, rgba(245, 247, 250, 0.84) 0%, rgba(250, 252, 254, 0.88) 100%),
-              url('/bg3.jpeg') center center / cover no-repeat;
+  background: url('/bg3.jpeg') center center / cover no-repeat;
   background-attachment: fixed;
 }
 
@@ -818,13 +886,13 @@ img {
 }
 
 .service-card {
-  background: rgba(255, 255, 255, 0.94);
+  background: rgba(228, 241, 253, 0.96);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   border-radius: var(--border-radius-md);
   padding: 40px;
   box-shadow: var(--shadow-md);
-  border: 1px solid rgba(0, 28, 70, 0.08);
+  border: 1px solid var(--color-border-slate);
   transition: all var(--transition-normal);
   display: flex;
   flex-direction: column;
@@ -1553,12 +1621,104 @@ img {
   background-color: var(--color-primary);
 }
 
+/* Partners Section (dynamic, lateral continuous marquee) */
+.partners-section {
+  border-top: 1px solid rgba(0, 28, 70, 0.08);
+  padding: 50px 0 60px;
+  background: #F8FAFC;
+  overflow: hidden;
+  position: relative;
+}
+
+.partners-section .partners-title {
+  text-align: center;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  color: var(--color-text-gray-light);
+  text-transform: uppercase;
+  margin-bottom: 32px;
+}
+
+.partners-marquee-wrapper {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  display: flex;
+  mask-image: linear-gradient(to right, transparent 0%, black 12%, black 88%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to right, transparent 0%, black 12%, black 88%, transparent 100%);
+}
+
+.partners-track {
+  display: flex;
+  align-items: center;
+  gap: 50px;
+  width: max-content;
+  animation: partners-lateral-scroll 28s linear infinite;
+  will-change: transform;
+}
+
+.partners-marquee-wrapper:hover .partners-track {
+  animation-play-state: paused;
+}
+
+@keyframes partners-lateral-scroll {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.partner-logo-item {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  opacity: 0.65;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  padding: 8px 16px;
+  min-width: 120px;
+}
+
+.partner-logo-item:hover {
+  opacity: 1;
+  transform: scale(1.08);
+}
+
+.partner-logo-item img {
+  height: 52px;
+  max-width: 160px;
+  object-fit: contain;
+  filter: grayscale(100%);
+  transition: filter 0.3s ease;
+}
+
+.partner-logo-item:hover img {
+  filter: grayscale(0%);
+}
+
+.partner-name-fallback {
+  font-weight: 800;
+  font-size: 15px;
+  color: var(--color-primary);
+  letter-spacing: 0.03em;
+  white-space: nowrap;
+  padding: 10px 18px;
+  background: rgba(2, 132, 199, 0.08);
+  border: 1px solid rgba(2, 132, 199, 0.2);
+  border-radius: 8px;
+}
+
 /* Footer */
 .site-footer {
-  background-color: var(--color-bg-dark);
-  color: var(--color-bg-white);
+  background-color: #0B0F19;
+  color: #F1F5F9;
   padding: 80px 0 30px;
   font-size: 15px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .footer-top {
@@ -1581,6 +1741,7 @@ img {
   line-height: 1.1;
   font-weight: 800;
   text-align: right;
+  color: var(--color-brand-blue-light);
 }
 
 .footer-top h2 em {
@@ -1594,7 +1755,7 @@ img {
   gap: 12px;
   font-weight: 800;
   font-size: 24px;
-  color: var(--color-bg-white);
+  color: var(--color-brand-blue-light);
 }
 
 .footer-brand img {
@@ -1607,7 +1768,7 @@ img {
   font-size: 22px;
   font-weight: 800;
   letter-spacing: 0.08em;
-  color: var(--color-bg-white);
+  color: var(--color-brand-blue-light);
 }
 
 .round-link {
@@ -1615,7 +1776,7 @@ img {
   height: 60px;
   border-radius: 50%;
   background-color: var(--color-secondary);
-  color: var(--color-bg-white);
+  color: #FFFFFF;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1645,9 +1806,9 @@ img {
   font-family: var(--font-mono);
   font-size: 11px;
   letter-spacing: 0.1em;
-  color: var(--color-text-gray-light);
+  color: var(--color-brand-blue-soft);
   text-transform: uppercase;
-  font-weight: 600;
+  font-weight: 700;
 }
 
 .footer-contacts-list {
@@ -2630,6 +2791,8 @@ img {
 /* Message Modal */
 .admin-message-modal {
   max-width: 700px;
+  max-height: 90vh;
+  overflow-y: auto;
   display: block;
 }
 

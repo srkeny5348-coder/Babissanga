@@ -17,7 +17,7 @@ const IconGlobe = () => (
 );
 
 const Contact = ({ initialMessage }) => {
-  const { addMessage } = useSiteData();
+  const { addMessage, servicesData } = useSiteData();
   const [formStatus, setFormStatus] = useState('idle');
   const [formData, setFormData] = useState({
     nome: '',
@@ -167,10 +167,11 @@ const Contact = ({ initialMessage }) => {
                     required
                   >
                     <option disabled value="Seleccionar serviço">Seleccionar serviço</option>
-                    <option value="Transporte Rodoviário">Transporte Rodoviário</option>
-                    <option value="Logística Marítima">Logística Marítima</option>
-                    <option value="Carga Aérea">Carga Aérea</option>
-                    <option value="Projectos Especiais">Projectos Especiais</option>
+                    {(servicesData || []).map(service => (
+                      <option key={service.id} value={service.name}>
+                        {service.name}
+                      </option>
+                    ))}
                   </select>
                 </div>
 

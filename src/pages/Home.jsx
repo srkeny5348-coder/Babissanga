@@ -1,18 +1,53 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useSiteData } from '../context/SiteDataContext';
 
-const Home = () => {
-  const { fleetData } = useSiteData();
+const HERO_BG_IMAGES = [
+  { id: 'slide_1', url: '/bg1.jpg', label: 'Operação Portuária & Carga Pesada' },
+  { id: 'slide_2', url: '/bg2.jpg', label: 'Frota & Equipa Babissanga' },
+  { id: 'slide_3', url: '/bg3.jpeg', label: 'Logística de Contentores & Aduana' }
+];
 
-  const volvo = fleetData.find(f => f.id === 'volvo') || {};
-  const steelbro = fleetData.find(f => f.id === 'steelbro') || {};
-  const hummerlift = fleetData.find(f => f.id === 'hummerlift') || {};
+const Home = () => {
+  const { fleetData, heroSlides, partnersData } = useSiteData();
+  const [currentSlide, setCurrentSlide] = useState(0);
+
+  const activeSlides = (heroSlides && heroSlides.length > 0)
+    ? heroSlides
+    : HERO_BG_IMAGES;
+
+  useEffect(() => {
+    if (activeSlides.length <= 1) return;
+    const timer = setInterval(() => {
+      setCurrentSlide(prev => (prev + 1) % activeSlides.length);
+    }, 5500);
+    return () => clearInterval(timer);
+  }, [activeSlides.length]);
+
+  const volvo = (fleetData && fleetData.find(f => f.id === 'volvo')) || {};
+  const steelbro = (fleetData && fleetData.find(f => f.id === 'steelbro')) || {};
+  const hummerlift = (fleetData && fleetData.find(f => f.id === 'hummerlift')) || {};
 
   return (
     <>
-      {/* Hero Section */}
+      {/* Hero Section with Horizontal Sliding Carousel */}
       <section className="hero">
-        <div className="container">
+        {/* Horizontal Background Track (No white curtain overlay) */}
+        <div className="hero-slider-track-container">
+          <div
+            className="hero-slider-track"
+            style={{ transform: `translateX(-${currentSlide * 100}%)` }}
+          >
+            {activeSlides.map((imgObj, idx) => (
+              <div
+                key={imgObj.id || idx}
+                className="hero-slider-slide"
+                style={{ backgroundImage: `url(${imgObj.url})` }}
+              />
+            ))}
+          </div>
+        </div>
+
+        <div className="container" style={{ position: 'relative', zIndex: 3 }}>
           <div className="hero-grid">
             <div className="hero-text animate-fade-in-up">
               <h1>Movemos o que<br /><em>faz o mundo</em> avançar.</h1>
@@ -25,10 +60,24 @@ const Home = () => {
               </div>
             </div>
             <div className="hero-graphic">
-              <img src="/circulo2.png" className="hero-image-circulo" alt="BJA Babissanga - Logística e Transporte" />
+              <img src="/Ncirculo.png" className="hero-image-circulo" alt="BJA Babissanga - Logística e Transporte" />
             </div>
           </div>
         </div>
+
+        {/* Carousel Slide Indicators */}
+        {activeSlides.length > 1 && (
+          <div className="hero-carousel-dots">
+            {activeSlides.map((_, idx) => (
+              <button
+                key={idx}
+                className={`hero-dot ${idx === currentSlide ? 'active' : ''}`}
+                onClick={() => setCurrentSlide(idx)}
+                aria-label={`Ver slide ${idx + 1}`}
+              />
+            ))}
+          </div>
+        )}
         
         <div className="hero-bottom-bar">
           <div className="hero-routes">
@@ -158,6 +207,79 @@ const Home = () => {
           </div>
         </div>
       </section>
+
+      {/* Parceiros */}
+      {partnersData && partnersData.length > 0 && (() => {
+        // Se houver apenas 1 parceiro, exibe apenas a sua foto centrada sem duplicações nem animação
+        if (partnersData.length === 1) {
+          const singlePartner = partnersData[0];
+          return (
+            <section className="partners-section">
+              <div className="container">
+                <p className="partners-title">Os Nossos Parceiros e Clientes</p>
+                <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '10px 0' }}>
+                  <div className="partner-logo-item" style={{ opacity: 1, transform: 'none' }}>
+                    {singlePartner.logo ? (
+                      <img
+                        src={singlePartner.logo}
+                        alt={singlePartner.name}
+                        title={singlePartner.name}
+                        style={{ filter: 'none', height: '60px', maxWidth: '220px' }}
+                      />
+                    ) : (
+                      <span className="partner-name-fallback">{singlePartner.name}</span>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </section>
+          );
+        }
+
+        // Se houver múltiplos parceiros, ativa o movimento lateral contínuo
+        const repeatMultiplier = Math.max(3, Math.ceil(12 / partnersData.length));
+        const repeatedList = Array.from({ length: repeatMultiplier }, () => partnersData).flat();
+
+        return (
+          <section className="partners-section">
+            <div className="container">
+              <p className="partners-title">Os Nossos Parceiros e Clientes</p>
+            </div>
+            <div className="partners-marquee-wrapper">
+              <div className="partners-track">
+                {/* Primeiro bloco */}
+                {repeatedList.map((partner, idx) => (
+                  <div key={`p1_${partner.id}_${idx}`} className="partner-logo-item">
+                    {partner.logo ? (
+                      <img
+                        src={partner.logo}
+                        alt={partner.name}
+                        title={partner.name}
+                      />
+                    ) : (
+                      <span className="partner-name-fallback">{partner.name}</span>
+                    )}
+                  </div>
+                ))}
+                {/* Segundo bloco duplicado para transição contínua a 100% translateX(-50%) */}
+                {repeatedList.map((partner, idx) => (
+                  <div key={`p2_${partner.id}_${idx}`} className="partner-logo-item">
+                    {partner.logo ? (
+                      <img
+                        src={partner.logo}
+                        alt={partner.name}
+                        title={partner.name}
+                      />
+                    ) : (
+                      <span className="partner-name-fallback">{partner.name}</span>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          </section>
+        );
+      })()}
     </>
   );
 };

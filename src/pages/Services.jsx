@@ -42,9 +42,7 @@ const Services = () => {
             <span className="eyebrow"><i></i> SERVIÇOS TÉCNICOS</span>
             <h2>Uma solução para<br />cada <em>desafio.</em></h2>
           </div>
-          <p className="section-copy">
-            Do primeiro quilómetro à entrega final no destino, assumimos o controlo profissional de toda a cadeia de abastecimento.
-          </p>
+          
         </div>
 
         <div className="services-grid">
