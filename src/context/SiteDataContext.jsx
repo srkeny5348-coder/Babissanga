@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { supabase } from '../lib/supabase';
 
 export const SiteDataContext = createContext();
 
@@ -13,6 +14,8 @@ const STORAGE_KEYS = {
   SERVICES: 'babissanga_services_v1',
   PARTNERS: 'babissanga_partners_v1'
 };
+
+const SUPABASE_ROW_ID = 'main';
 
 const DEFAULT_PARTNERS = [
   { id: 'part_1', name: 'Porto de Luanda', logo: '/NLogo.png' },
@@ -187,6 +190,7 @@ const DEFAULT_FREIGHT_RATES = [
 ];
 
 export const SiteDataProvider = ({ children }) => {
+  const [supabaseReady, setSupabaseReady] = useState(false);
   // Footer Data
   const [footerData, setFooterData] = useState(() => {
     try {
@@ -265,6 +269,62 @@ export const SiteDataProvider = ({ children }) => {
       return DEFAULT_PARTNERS;
     }
   });
+
+  useEffect(() => {
+    if (!supabase) {
+      setSupabaseReady(true);
+      return;
+    }
+
+    const loadSiteData = async () => {
+      const { data, error } = await supabase
+        .from('site_data')
+        .select('data')
+        .eq('id', SUPABASE_ROW_ID)
+        .maybeSingle();
+
+      if (error) {
+        console.error('Error loading site data from Supabase', error);
+      } else if (data?.data) {
+        const remote = data.data;
+        if (remote.footerData) setFooterData(remote.footerData);
+        if (remote.fleetData) setFleetData(remote.fleetData);
+        if (remote.messages) setMessages(remote.messages);
+        if (remote.heroSlides) setHeroSlides(remote.heroSlides);
+        if (remote.freightRates) setFreightRates(remote.freightRates);
+        if (remote.servicesData) setServicesData(remote.servicesData);
+        if (remote.partnersData) setPartnersData(remote.partnersData);
+      }
+
+      setSupabaseReady(true);
+    };
+
+    loadSiteData();
+  }, []);
+
+  useEffect(() => {
+    if (!supabase || !supabaseReady) return;
+
+    const saveSiteData = async () => {
+      const { error } = await supabase.from('site_data').upsert({
+        id: SUPABASE_ROW_ID,
+        data: {
+          footerData,
+          fleetData,
+          messages,
+          heroSlides,
+          freightRates,
+          servicesData,
+          partnersData
+        },
+        updated_at: new Date().toISOString()
+      });
+
+      if (error) console.error('Error saving site data to Supabase', error);
+    };
+
+    saveSiteData();
+  }, [supabaseReady, footerData, fleetData, messages, heroSlides, freightRates, servicesData, partnersData]);
 
   // Save changes to localStorage
   useEffect(() => {

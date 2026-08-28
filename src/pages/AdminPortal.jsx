@@ -1,5 +1,6 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useSiteData } from '../context/SiteDataContext';
+import { supabase } from '../lib/supabase';
 
 // Clean SVG Icons for Admin
 const IconInbox = () => (
@@ -130,12 +131,29 @@ const AdminPortal = () => {
 
   // Authentication State
   const [isAuthenticated, setIsAuthenticated] = useState(() => {
-    return sessionStorage.getItem('babissanga_admin_auth') === 'true';
+    return false;
   });
 
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [loginError, setLoginError] = useState('');
+
+  useEffect(() => {
+    if (!supabase) {
+      setLoginError('O Supabase ainda não está configurado neste ambiente.');
+      return undefined;
+    }
+
+    supabase.auth.getSession().then(({ data }) => {
+      setIsAuthenticated(Boolean(data.session));
+    });
+
+    const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
+      setIsAuthenticated(Boolean(session));
+    });
+
+    return () => listener.subscription.unsubscribe();
+  }, []);
 
   // Active Tab: 'messages' | 'images' | 'carousel' | 'services' | 'freight' | 'footer' | 'security'
   const [activeTab, setActiveTab] = useState('messages');
@@ -359,45 +377,24 @@ const AdminPortal = () => {
   };
 
   // Login handler
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
-    const storedCreds = localStorage.getItem('babissanga_admin_custom_creds');
-    let validUser = 'admin';
-    let validPass = 'babissanga2026';
+    if (!supabase) return;
 
-    if (storedCreds) {
-      try {
-        const parsed = JSON.parse(storedCreds);
-        validUser = parsed.username || validUser;
-        validPass = parsed.password || validPass;
-      } catch (err) {
-        console.error(err);
-      }
-    }
+    const { error } = await supabase.auth.signInWithPassword({
+      email: username.trim(),
+      password
+    });
 
-    const cleanUser = username.trim().toLowerCase();
-    const cleanPass = password.trim();
-
-    const userMatches =
-      cleanUser === validUser.toLowerCase() ||
-      cleanUser === 'admin@babissanga.com' ||
-      cleanUser === 'babissanga' ||
-      cleanUser === 'admin';
-
-    const passMatches = cleanPass === validPass || cleanPass === 'babissanga2026' || cleanPass === 'admin';
-
-    if (userMatches && passMatches) {
-      setIsAuthenticated(true);
-      sessionStorage.setItem('babissanga_admin_auth', 'true');
+    if (!error) {
       setLoginError('');
     } else {
-      setLoginError('Credenciais inválidas. Verifique o utilizador e a palavra-passe.');
+      setLoginError('Credenciais inválidas. Verifique o e-mail e a palavra-passe.');
     }
   };
 
-  const handleLogout = () => {
-    setIsAuthenticated(false);
-    sessionStorage.removeItem('babissanga_admin_auth');
+  const handleLogout = async () => {
+    if (supabase) await supabase.auth.signOut();
   };
 
   // Footer form state
@@ -488,7 +485,7 @@ const AdminPortal = () => {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [securityMessage, setSecurityMessage] = useState('');
 
-  const handlePasswordChange = (e) => {
+  const handlePasswordChange = async (e) => {
     e.preventDefault();
     if (newPassword.length < 6) {
       setSecurityMessage('A nova palavra-passe deve ter pelo menos 6 caracteres.');
@@ -499,10 +496,17 @@ const AdminPortal = () => {
       return;
     }
 
-    localStorage.setItem(
-      'babissanga_admin_custom_creds',
-      JSON.stringify({ username: 'admin', password: newPassword })
-    );
+    if (!supabase) {
+      setSecurityMessage('O Supabase ainda não está configurado.');
+      return;
+    }
+
+    const { error } = await supabase.auth.updateUser({ password: newPassword });
+    if (error) {
+      setSecurityMessage('Não foi possível atualizar a palavra-passe.');
+      return;
+    }
+
     setNewPassword('');
     setConfirmPassword('');
     setSecurityMessage('');
