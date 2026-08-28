@@ -50,12 +50,16 @@ const Contact = ({ initialMessage }) => {
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleFormSubmit = (e) => {
+  const handleFormSubmit = async (e) => {
     e.preventDefault();
     setFormStatus('submitting');
 
-    // Register message in the administration system
-    addMessage(formData);
+    try {
+      await addMessage(formData);
+    } catch {
+      setFormStatus('error');
+      return;
+    }
 
     setTimeout(() => {
       setFormStatus('success');

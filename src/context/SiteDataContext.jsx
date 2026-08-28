@@ -276,7 +276,18 @@ export const SiteDataProvider = ({ children }) => {
       return;
     }
 
+    const loadMessages = async () => {
+      const { data, error } = await supabase
+        .from('contact_messages')
+        .select('data')
+        .order('created_at', { ascending: false });
+
+      if (!error && data?.length) setMessages(data.map(row => row.data));
+      if (error) console.error('Error loading contact messages', error);
+    };
+
     const loadSiteData = async () => {
+      const { data: sessionData } = await supabase.auth.getSession();
       const { data, error } = await supabase
         .from('site_data')
         .select('data')
@@ -289,17 +300,24 @@ export const SiteDataProvider = ({ children }) => {
         const remote = data.data;
         if (remote.footerData) setFooterData(remote.footerData);
         if (remote.fleetData) setFleetData(remote.fleetData);
-        if (remote.messages) setMessages(remote.messages);
         if (remote.heroSlides) setHeroSlides(remote.heroSlides);
         if (remote.freightRates) setFreightRates(remote.freightRates);
         if (remote.servicesData) setServicesData(remote.servicesData);
         if (remote.partnersData) setPartnersData(remote.partnersData);
       }
 
+      if (sessionData.session) await loadMessages();
+
       setSupabaseReady(true);
     };
 
     loadSiteData();
+
+    const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (session) loadMessages();
+    });
+
+    return () => listener.subscription.unsubscribe();
   }, []);
 
   useEffect(() => {
@@ -311,7 +329,6 @@ export const SiteDataProvider = ({ children }) => {
         data: {
           footerData,
           fleetData,
-          messages,
           heroSlides,
           freightRates,
           servicesData,
@@ -384,22 +401,49 @@ export const SiteDataProvider = ({ children }) => {
   }, [partnersData]);
 
   // Actions
-  const addMessage = (msg) => {
+  const addMessage = async (msg) => {
     const newMessage = {
       ...msg,
       id: 'msg_' + Date.now(),
       date: new Date().toISOString(),
       status: 'Novo'
     };
+
+    if (supabase) {
+      const { error } = await supabase.from('contact_messages').insert({
+        id: newMessage.id,
+        data: newMessage,
+        created_at: newMessage.date
+      });
+      if (error) {
+        console.error('Error saving contact message', error);
+        throw error;
+      }
+    }
+
     setMessages(prev => [newMessage, ...prev]);
     return newMessage;
   };
 
-  const updateMessageStatus = (id, newStatus) => {
+  const updateMessageStatus = async (id, newStatus) => {
+    if (supabase) {
+      const message = messages.find(item => item.id === id);
+      if (message) {
+        const { error } = await supabase
+          .from('contact_messages')
+          .update({ data: { ...message, status: newStatus } })
+          .eq('id', id);
+        if (error) console.error('Error updating contact message', error);
+      }
+    }
     setMessages(prev => prev.map(m => m.id === id ? { ...m, status: newStatus } : m));
   };
 
-  const deleteMessage = (id) => {
+  const deleteMessage = async (id) => {
+    if (supabase) {
+      const { error } = await supabase.from('contact_messages').delete().eq('id', id);
+      if (error) console.error('Error deleting contact message', error);
+    }
     setMessages(prev => prev.filter(m => m.id !== id));
   };
 
