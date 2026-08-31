@@ -50,18 +50,13 @@ const Home = () => {
         <div className="container" style={{ position: 'relative', zIndex: 3 }}>
           <div className="hero-grid">
             <div className="hero-text animate-fade-in-up">
-              <h1>Movemos o que<br /><em>faz o mundo</em> avançar.</h1>
-              <p className="hero-copy">
-                Uma operação integrada que conecta mercados de transporte rodoviário, marítimo e aéreo, reduz distâncias e entrega confiança em cada quilómetro.
-              </p>
+              
               <div className="hero-actions">
                 <a className="btn btn-secondary" href="#/contacto">Começar agora <span>→</span></a>
                 <a className="btn btn-outline" href="#/servicos">Explorar soluções <span>↓</span></a>
               </div>
             </div>
-            <div className="hero-graphic">
-              <img src="/Ncirculo.png" className="hero-image-circulo" alt="BJA Babissanga - Logística e Transporte" />
-            </div>
+            
           </div>
         </div>
 
