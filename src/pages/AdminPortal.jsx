@@ -476,7 +476,7 @@ const AdminPortal = () => {
     try {
       const compressedDataUrl = await compressImageFile(file);
       const imageUrl = await uploadImage(compressedDataUrl, `hero/${slideId}`);
-      updateHeroSlide(slideId, { url: imageUrl });
+      await updateHeroSlide(slideId, { url: imageUrl });
       showToast('Fotografia de fundo do Hero atualizada com sucesso.');
     } catch (error) {
       console.error('Error processing hero image upload', error);
@@ -492,7 +492,7 @@ const AdminPortal = () => {
     try {
       const compressedDataUrl = await compressImageFile(file);
       const imageUrl = await uploadImage(compressedDataUrl, `fleet/${vehicleId}`);
-      updateVehicleImage(vehicleId, imageUrl);
+      await updateVehicleImage(vehicleId, imageUrl);
       showToast('Imagem do veículo atualizada com sucesso.');
     } catch (error) {
       console.error('Error processing vehicle image upload', error);
@@ -508,7 +508,7 @@ const AdminPortal = () => {
     try {
       const compressedDataUrl = await compressImageFile(file);
       const imageUrl = await uploadImage(compressedDataUrl, `partners/${partnerId}`);
-      updatePartner(partnerId, { logo: imageUrl });
+      await updatePartner(partnerId, { logo: imageUrl });
       showToast('Logótipo do parceiro atualizado com sucesso.');
     } catch (error) {
       console.error('Error processing partner image upload', error);

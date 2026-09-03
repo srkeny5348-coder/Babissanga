@@ -343,6 +343,23 @@ export const SiteDataProvider = ({ children }) => {
     saveSiteData();
   }, [supabaseReady, footerData, fleetData, messages, heroSlides, freightRates, servicesData, partnersData]);
 
+  const persistSiteData = async (nextData) => {
+    if (!supabase || !supabaseReady) {
+      throw new Error('O Supabase ainda não está pronto para guardar os dados.');
+    }
+
+    const { error } = await supabase.from('site_data').upsert({
+      id: SUPABASE_ROW_ID,
+      data: nextData,
+      updated_at: new Date().toISOString()
+    });
+
+    if (error) {
+      console.error('Error persisting site data to Supabase', error);
+      throw new Error(`Falha ao guardar no Supabase: ${error.message}`);
+    }
+  };
+
   // Save changes to localStorage
   useEffect(() => {
     try {
@@ -473,8 +490,10 @@ export const SiteDataProvider = ({ children }) => {
     return data.publicUrl;
   };
 
-  const updateVehicleImage = (id, newImage) => {
-    setFleetData(prev => prev.map(v => v.id === id ? { ...v, image: newImage } : v));
+  const updateVehicleImage = async (id, newImage) => {
+    const nextFleetData = fleetData.map(v => v.id === id ? { ...v, image: newImage } : v);
+    await persistSiteData({ footerData, fleetData: nextFleetData, heroSlides, freightRates, servicesData, partnersData });
+    setFleetData(nextFleetData);
   };
 
   const updateVehicleAutoMessage = (id, newAutoMessage) => {
@@ -523,8 +542,10 @@ export const SiteDataProvider = ({ children }) => {
     setHeroSlides(prev => prev.filter(s => s.id !== id));
   };
 
-  const updateHeroSlide = (id, slideData) => {
-    setHeroSlides(prev => prev.map(s => s.id === id ? { ...s, ...slideData } : s));
+  const updateHeroSlide = async (id, slideData) => {
+    const nextHeroSlides = heroSlides.map(s => s.id === id ? { ...s, ...slideData } : s);
+    await persistSiteData({ footerData, fleetData, heroSlides: nextHeroSlides, freightRates, servicesData, partnersData });
+    setHeroSlides(nextHeroSlides);
   };
 
   // Freight Rate Actions
@@ -580,8 +601,10 @@ export const SiteDataProvider = ({ children }) => {
     return newPartner;
   };
 
-  const updatePartner = (id, partnerData) => {
-    setPartnersData(prev => prev.map(p => p.id === id ? { ...p, ...partnerData } : p));
+  const updatePartner = async (id, partnerData) => {
+    const nextPartnersData = partnersData.map(p => p.id === id ? { ...p, ...partnerData } : p);
+    await persistSiteData({ footerData, fleetData, heroSlides, freightRates, servicesData, partnersData: nextPartnersData });
+    setPartnersData(nextPartnersData);
   };
 
   const deletePartner = (id) => {
