@@ -451,6 +451,28 @@ export const SiteDataProvider = ({ children }) => {
     setFooterData(prev => ({ ...prev, ...newData }));
   };
 
+  const uploadImage = async (dataUrl, folder) => {
+    if (!supabase) {
+      throw new Error('O Supabase não está configurado neste ambiente.');
+    }
+
+    const response = await fetch(dataUrl);
+    const blob = await response.blob();
+    const extension = blob.type === 'image/png' ? 'png' : 'jpg';
+    const filePath = `${folder}/${Date.now()}-${Math.random().toString(36).slice(2)}.${extension}`;
+    const { error } = await supabase.storage
+      .from('site-images')
+      .upload(filePath, blob, { contentType: blob.type, upsert: false });
+
+    if (error) {
+      console.error('Error uploading image to Supabase Storage', error);
+      throw new Error('Não foi possível guardar a imagem no Supabase.');
+    }
+
+    const { data } = supabase.storage.from('site-images').getPublicUrl(filePath);
+    return data.publicUrl;
+  };
+
   const updateVehicleImage = (id, newImage) => {
     setFleetData(prev => prev.map(v => v.id === id ? { ...v, image: newImage } : v));
   };
@@ -595,6 +617,7 @@ export const SiteDataProvider = ({ children }) => {
         updateMessageStatus,
         deleteMessage,
         updateFooter,
+        uploadImage,
         updateVehicleImage,
         updateVehicleAutoMessage,
         updateVehicleDetails,

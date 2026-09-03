@@ -25,6 +25,29 @@ create policy "Public can update site data"
   using (id = 'main')
   with check (id = 'main');
 
+insert into storage.buckets (id, name, public)
+values ('site-images', 'site-images', true)
+on conflict (id) do update set public = true;
+
+drop policy if exists "Public can read site images" on storage.objects;
+create policy "Public can read site images"
+  on storage.objects for select
+  to anon, authenticated
+  using (bucket_id = 'site-images');
+
+drop policy if exists "Authenticated can upload site images" on storage.objects;
+create policy "Authenticated can upload site images"
+  on storage.objects for insert
+  to authenticated
+  with check (bucket_id = 'site-images');
+
+drop policy if exists "Authenticated can update site images" on storage.objects;
+create policy "Authenticated can update site images"
+  on storage.objects for update
+  to authenticated
+  using (bucket_id = 'site-images')
+  with check (bucket_id = 'site-images');
+
 create table if not exists public.contact_messages (
   id text primary key,
   data jsonb not null,
