@@ -97,6 +97,46 @@ const IconEdit = () => (
   </svg>
 );
 
+const compressImageFile = (file) => new Promise((resolve, reject) => {
+  if (!file || !file.type.startsWith('image/')) {
+    reject(new Error('O ficheiro selecionado não é uma imagem válida.'));
+    return;
+  }
+
+  const reader = new FileReader();
+  reader.onload = () => {
+    const img = new Image();
+    img.onload = () => {
+      const canvas = document.createElement('canvas');
+      const maxWidth = 1400;
+      const maxHeight = 1400;
+      const scale = Math.min(1, maxWidth / img.width, maxHeight / img.height);
+      canvas.width = Math.max(1, Math.round(img.width * scale));
+      canvas.height = Math.max(1, Math.round(img.height * scale));
+
+      const ctx = canvas.getContext('2d');
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+      const mimeType = file.type.includes('png') ? 'image/png' : 'image/jpeg';
+      const output = canvas.toDataURL(mimeType, 0.75);
+
+      if (output.length > 700000) {
+        const fallback = canvas.toDataURL('image/jpeg', 0.55);
+        resolve(fallback.length < output.length ? fallback : output);
+        return;
+      }
+
+      resolve(output);
+    };
+    img.onerror = () => reject(new Error('Não foi possível ler a imagem selecionada.'));
+    img.src = reader.result;
+  };
+  reader.onerror = () => reject(new Error('Falha ao processar a imagem selecionada.'));
+  reader.readAsDataURL(file);
+});
+
 const AdminPortal = () => {
   const {
     footerData,
@@ -428,56 +468,48 @@ const AdminPortal = () => {
     setHeroForm({ url: '/bg1.jpg', label: '' });
   };
 
-  const handleHeroFileUpload = (slideId, e) => {
+  const handleHeroFileUpload = async (slideId, e) => {
     const file = e.target.files[0];
     if (!file) return;
-    if (!file.type.startsWith('image/')) {
-      alert('Por favor selecione um ficheiro de imagem válido.');
-      return;
-    }
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      updateHeroSlide(slideId, { url: event.target.result });
+
+    try {
+      const compressedDataUrl = await compressImageFile(file);
+      updateHeroSlide(slideId, { url: compressedDataUrl });
       showToast('Fotografia de fundo do Hero atualizada com sucesso.');
-    };
-    reader.readAsDataURL(file);
+    } catch (error) {
+      console.error('Error processing hero image upload', error);
+      showToast(error.message || 'Não foi possível atualizar a imagem do Hero.');
+    }
   };
 
-  // Image Upload Handler using FileReader (Data URL)
-  const handleFileUpload = (vehicleId, e) => {
+  // Image Upload Handler using compressed Data URL
+  const handleFileUpload = async (vehicleId, e) => {
     const file = e.target.files[0];
     if (!file) return;
 
-    if (!file.type.startsWith('image/')) {
-      alert('Por favor selecione um ficheiro de imagem válido.');
-      return;
-    }
-
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      const dataUrl = event.target.result;
-      updateVehicleImage(vehicleId, dataUrl);
+    try {
+      const compressedDataUrl = await compressImageFile(file);
+      updateVehicleImage(vehicleId, compressedDataUrl);
       showToast('Imagem do veículo atualizada com sucesso.');
-    };
-    reader.readAsDataURL(file);
+    } catch (error) {
+      console.error('Error processing vehicle image upload', error);
+      showToast(error.message || 'Não foi possível atualizar a imagem do veículo.');
+    }
   };
 
-  // Partner Logo Upload Handler using FileReader
-  const handlePartnerFileUpload = (partnerId, e) => {
+  // Partner Logo Upload Handler using compressed Data URL
+  const handlePartnerFileUpload = async (partnerId, e) => {
     const file = e.target.files[0];
     if (!file) return;
 
-    if (!file.type.startsWith('image/')) {
-      alert('Por favor selecione um ficheiro de imagem válido.');
-      return;
-    }
-
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      updatePartner(partnerId, { logo: event.target.result });
+    try {
+      const compressedDataUrl = await compressImageFile(file);
+      updatePartner(partnerId, { logo: compressedDataUrl });
       showToast('Logótipo do parceiro atualizado com sucesso.');
-    };
-    reader.readAsDataURL(file);
+    } catch (error) {
+      console.error('Error processing partner image upload', error);
+      showToast(error.message || 'Não foi possível atualizar o logótipo do parceiro.');
+    }
   };
 
   // Security Form (Change Password)
